@@ -13,8 +13,8 @@ export default {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        lamaGreenLight:"#B9FF66",
-        lamaBlack:"#191A23",
+        lamaGreenLight: "#B9FF66",
+        lamaBlack: "#191A23",
         lamaSky: "#C3EBFA",
         lamaSkyLight: "#B9FF66",
         lamaPurple: "#CFCEFF",

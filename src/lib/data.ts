@@ -1,6 +1,4 @@
-
 export let role = "admin";
-
 
 export const employeesData = [
   {
@@ -21,7 +19,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-   
+
     address: "123 Main St, Anytown, USA",
   },
   {
@@ -32,7 +30,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/428328/pexels-photo-428328.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-    
+
     address: "123 Main St, Anytown, USA",
   },
   {
@@ -43,7 +41,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/1187765/pexels-photo-1187765.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-    
+
     address: "123 Main St, Anytown, USA",
   },
   {
@@ -54,7 +52,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-    
+
     address: "123 Main St, Anytown, USA",
   },
   {
@@ -65,7 +63,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-    
+
     address: "123 Main St, Anytown, USA",
   },
   {
@@ -76,7 +74,7 @@ export const employeesData = [
     photo:
       "https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-   
+
     address: "123 Main St, Anytown, USA",
   },
   {
