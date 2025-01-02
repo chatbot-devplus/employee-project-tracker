@@ -1,17 +1,22 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import { projectsData } from "../../../lib/projectsData";
 import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
+import React, { useState } from "react";
+import CreateProjectForm from "../../../components/CreateProjectForm";
 
-type project = {
+export type project = {
   id: number;
   projectID: string;
   name: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: string;
   is_destroy: boolean;
+  skill: string[];
 };
 
 const columns = [
@@ -47,6 +52,11 @@ const columns = [
 ];
 
 const employeesListPage = () => {
+  const [showForm, setShowForm] = useState(false);
+  const handleCreateProject = (newProject: Omit<project, "id" | "is_destroy">) => {
+    console.log("New Project:", newProject);
+    // Logic lưu trữ project mới (có thể cập nhật state hoặc gọi API)
+  };
   const renderRow = (item: project) => (
     <tr
       key={item.id}
@@ -77,6 +87,13 @@ const employeesListPage = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {/* Hiển thị form khi nhấn nút */}
+      {showForm && (
+        <CreateProjectForm
+          onSubmit={handleCreateProject}
+          onClose={() => setShowForm(false)}
+        />
+      )}
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
@@ -89,7 +106,9 @@ const employeesListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
+            <button 
+            onClick={() => setShowForm(true)}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/create.png" alt="" width={14} height={14} />
             </button>
           </div>
