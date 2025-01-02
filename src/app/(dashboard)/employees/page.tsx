@@ -3,6 +3,7 @@ import Link from "next/link";
 import { employeesData } from "../../../lib/data";
 import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
+import FormModal from "../../../components/FormModal";
 
 type employee = {
   id: number;
@@ -91,9 +92,7 @@ const employeesListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
-              <Image src="/create.png" alt="" width={14} height={14} />
-            </button>
+            <FormModal table="employee" type="create" />
           </div>
         </div>
       </div>
