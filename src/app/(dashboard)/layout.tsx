@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Menu from "../../components/Menu";
 import Navbar from "../../components/Navbar";
-import Chatbot from "../../components/Chatbot";
+import ChatBox from "../../components/Chatbox";
 
 export default function DashboardLayout({
   children,
@@ -26,7 +26,7 @@ export default function DashboardLayout({
       <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll flex flex-col">
         <Navbar />
         {children}
-        <Chatbot />
+        <ChatBox />
       </div>
     </div>
   );
