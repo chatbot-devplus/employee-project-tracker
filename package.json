@@ -16,7 +16,6 @@
     "@supabase/supabase-js": "^2.47.10",
     "antd": "^5.22.7",
     "date-fns": "^4.1.0",
-    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "employee-project-tracker": "file:",
     "next": "15.1.3",
