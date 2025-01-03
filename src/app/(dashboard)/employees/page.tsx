@@ -17,7 +17,7 @@ type employee = {
 
 const columns = [
   {
-    header: "Info",
+    header: "Name",
     accessor: "info",
   },
   {
@@ -69,9 +69,8 @@ const employeesListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            <Image src="/delete.png" alt="" width={16} height={16} />
-          </button>
+          <FormModal table="employee" type="delete" id={item.id} />
+          <FormModal table="employee" type="update" id={item.id} />
         </div>
       </td>
     </tr>
@@ -85,13 +84,6 @@ const employeesListPage = () => {
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           {/* <TableSearch /> */}
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
-              <Image src="/filter.png" alt="" width={14} height={14} />
-            </button>
-
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
-              <Image src="/sort.png" alt="" width={14} height={14} />
-            </button>
             <FormModal table="employee" type="create" />
           </div>
         </div>

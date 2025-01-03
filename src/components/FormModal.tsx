@@ -10,9 +10,9 @@ const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
 });
 
 const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
+  [key: string]: (type: "create" | "update", data: any) => JSX.Element;
 } = {
-  employee: (type, data) => <EmployeeForm type={type} data={data} />,
+  employee: (type, data) => <EmployeeForm type={type} {...data} />,
 };
 
 const FormModal = ({
@@ -35,7 +35,7 @@ const FormModal = ({
         : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
-
+  const closeModal = () => setOpen(false);
   const Form = () => {
     return type === "delete" && id ? (
       <form action="" className="p-4 flex flex-col gap-4">
@@ -47,7 +47,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, data)
+      forms[table](type, { ...data, closeModal })
     ) : (
       "Form not found!"
     );
@@ -67,7 +67,9 @@ const FormModal = ({
             <Form />
             <div
               className="absolute top-4 right-4 cursor-pointer"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+              }}
             >
               <Image src="/close.png" alt="" width={14} height={14} />
             </div>
