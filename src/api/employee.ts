@@ -2,6 +2,19 @@
 import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid"; // Import uuidv4 từ thư viện uuid
 
+const getAllEmployees = async () => {
+  try {
+    const { data, error } = await supabase.from("employees").select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+};
+
 const createEmployee = async (data: any) => {
   try {
     // Sử dụng uuidv4 để tạo ID
@@ -35,4 +48,4 @@ const createEmployee = async (data: any) => {
   }
 };
 
-export { createEmployee };
+export { createEmployee,getAllEmployees };

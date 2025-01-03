@@ -3,7 +3,7 @@ const Table = ({
   renderRow,
   data,
 }: {
-  columns: { header: string; accessor: string; className?: string }[];
+  columns: { key: string; label: string; className?: string }[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderRow: (item: any) => React.ReactNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,8 +14,8 @@ const Table = ({
       <thead className="border-separate border-spacing-y-10">
         <tr className="text-left text-gray-500 text-sm">
           {columns.map((col) => (
-            <th key={col.accessor} className={col.className}>
-              {col.header}
+            <th key={col.key} className={col.className}>
+              {col.label}
             </th>
           ))}
         </tr>
