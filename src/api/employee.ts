@@ -48,4 +48,32 @@ const createEmployee = async (data: any) => {
   }
 };
 
-export { createEmployee,getAllEmployees };
+const updateEmployee = async (id: string, updatedData: any) => {
+  try {
+    // Cập nhật dữ liệu trong bảng employees
+    const { data, error } = await supabase
+      .from("employees")
+      .update({
+        name: updatedData.name,
+        email: updatedData.email,
+        role: updatedData.role,
+        joiningDate: updatedData.joiningDate,
+      })
+      .eq("id", id); // Điều kiện để cập nhật theo ID
+
+    // Kiểm tra nếu có lỗi
+    if (error) {
+      throw new Error(error.message || "Unknown error");
+    }
+
+    // Hiển thị thông báo thành công
+    alert("Employee updated successfully!");
+    console.log("Data updated:", data);
+  } catch (error: any) {
+    // Xử lý lỗi nếu có
+    console.error("Error updating employee:", error);
+    alert(error.message || "An error occurred while updating the employee.");
+  }
+};
+
+export { createEmployee, getAllEmployees, updateEmployee };

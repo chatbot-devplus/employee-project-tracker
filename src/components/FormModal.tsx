@@ -18,12 +18,12 @@ const forms: {
 const FormModal = ({
   table,
   type,
-  data,
+  employee,
   id,
 }: {
   table: "employee";
   type: "create" | "update" | "delete";
-  data?: any;
+  employee?: any;
   id?: string;
 }) => {
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
@@ -47,7 +47,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, { ...data, closeModal })
+      forms[table](type, { employee, closeModal })
     ) : (
       "Form not found!"
     );

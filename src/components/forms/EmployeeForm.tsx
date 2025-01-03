@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "../InputField";
-import { createEmployee } from "../../api/employee";
+import { createEmployee, updateEmployee } from "../../api/employee";
 
 const schema = z.object({
   name: z
@@ -23,11 +23,11 @@ type Inputs = z.infer<typeof schema>;
 
 const EmployeeForm = ({
   type,
-  data,
+  employee,
   closeModal,
 }: {
   type: "create" | "update";
-  data?: any;
+  employee?: any;
   closeModal: () => void;
 }) => {
   const {
@@ -36,11 +36,25 @@ const EmployeeForm = ({
     formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: employee?.name || "",
+      email: employee?.email || "",
+      role: employee?.role || "",
+      joiningDate: employee?.joiningDate || "",
+    },
   });
 
-  const onSubmit = handleSubmit((data) => {
-    createEmployee(data);
-    closeModal();
+  const onSubmit = handleSubmit(async (formData) => {
+    try {
+      if (type === "create") {
+        await createEmployee(formData);
+      } else if (type === "update" && employee?.id) {
+        await updateEmployee(employee.id, formData);
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Error:", error);
+    }
   });
 
   return (
@@ -57,14 +71,14 @@ const EmployeeForm = ({
           <InputField
             label="Name"
             name="name"
-            defaultValue={data?.name}
+            defaultValue={employee?.name || ""}
             register={register}
             error={errors?.name}
           />
           <InputField
             label="Role"
             name="role"
-            defaultValue={data?.role}
+            defaultValue={employee?.role || ""}
             register={register}
             error={errors?.role}
           />
@@ -73,7 +87,7 @@ const EmployeeForm = ({
           <InputField
             label="Email"
             name="email"
-            defaultValue={data?.email}
+            defaultValue={employee?.email || ""}
             register={register}
             error={errors?.email}
             type="email"
@@ -81,7 +95,7 @@ const EmployeeForm = ({
           <InputField
             label="Start Day"
             name="joiningDate"
-            defaultValue={data?.joiningDate}
+            defaultValue={employee?.joiningDate || ""}
             register={register}
             error={errors.joiningDate}
             type="date"

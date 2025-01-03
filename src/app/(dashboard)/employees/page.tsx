@@ -86,8 +86,8 @@ const employeesListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <FormModal table="employee" type="delete" id={item.id} />
-          <FormModal table="employee" type="update" id={item.id} />
+          <FormModal table="employee" type="delete" id={item.id}/>
+          <FormModal table="employee" type="update" employee={item} />
         </div>
       </td>
     </tr>
