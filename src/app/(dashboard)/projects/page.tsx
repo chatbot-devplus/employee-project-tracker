@@ -53,7 +53,7 @@ const columns = [
 
 const employeesListPage = () => {
   const [showForm, setShowForm] = useState(false);
-  const handleCreateProject = (newProject: Omit<project, "id" | "is_destroy">) => {
+  const handleCreateProject = (newProject: any) => {
     console.log("New Project:", newProject);
     // Logic lưu trữ project mới (có thể cập nhật state hoặc gọi API)
   };
