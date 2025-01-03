@@ -5,11 +5,15 @@ import { useForm } from "react-hook-form";
 
 const schema = z.object({
   projectID: z.string().min(1, { message: "Project ID is required!" }),
-  name: z.string().min(3, { message: "Project name must be at least 3 characters long!" }),
+  name: z
+    .string()
+    .min(3, { message: "Project name must be at least 3 characters long!" }),
   startDate: z.string().nonempty({ message: "Start date is required!" }),
   endDate: z.string().nonempty({ message: "End date is required!" }),
   status: z.string().nonempty({ message: "Status is required!" }),
-  skill: z.array(z.string()).nonempty({ message: "At least one skill is required!" }),
+  skill: z
+    .array(z.string())
+    .nonempty({ message: "At least one skill is required!" }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -52,7 +56,9 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
         <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm">Project ID</label>
+            <label className="w-1/4 block font-medium text-sm">
+              Project ID
+            </label>
             <input
               {...register("projectID")}
               className="w-full border p-2 rounded"
@@ -76,7 +82,9 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm">Start Date</label>
+            <label className="w-1/4 block font-medium text-sm">
+              Start Date
+            </label>
             <input
               type="date"
               {...register("startDate")}
@@ -138,7 +146,10 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
           >
             Cancel
           </button>
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
             Create
           </button>
         </div>
