@@ -1,132 +1,135 @@
-import React, { useState } from "react";
-import { project } from "../app/(dashboard)/projects/page";
+import React from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-type ProjectCreateData = Omit<project, "id" | "is_destroy">;
+const schema = z.object({
+  projectID: z.string().min(1, { message: "Project ID is required!" }),
+  name: z.string().min(3, { message: "Project name must be at least 3 characters long!" }),
+  startDate: z.string().nonempty({ message: "Start date is required!" }),
+  endDate: z.string().nonempty({ message: "End date is required!" }),
+  status: z.string().nonempty({ message: "Status is required!" }),
+  skill: z.array(z.string()).nonempty({ message: "At least one skill is required!" }),
+});
+
+type FormData = z.infer<typeof schema>;
 
 type Props = {
-  onSubmit: (project: ProjectCreateData) => void; // Callback để gửi dữ liệu form
-  onClose: () => void; // Callback để đóng form
+  onSubmit: (data: FormData) => void; // Callback to handle form submission
+  onClose: () => void; // Callback to close the form
 };
 
 const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
-  const [formData, setFormData] = useState<ProjectCreateData>({
-    projectID: "",
-    name: "",
-    startDate: "",
-    endDate: "",
-    status: "",
-    skill:[] as string [],
-  });  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      projectID: "",
+      name: "",
+      startDate: "",
+      endDate: "",
+      status: "new",
+      skill: [],
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value, checked, type } = e.target;
+  const skills = ["React", "Node.js", "TypeScript", "CSS"];
 
-  if (type === "checkbox" && name === "skill") {
-    // Nếu là checkbox "skill", thêm hoặc xóa kỹ năng khỏi mảng
-    setFormData((prev) => {
-      const newSkills = checked
-        ? [...prev.skill, value]  // Thêm kỹ năng vào mảng nếu được chọn
-        : prev.skill.filter((skill) => skill !== value);  // Bỏ kỹ năng ra khỏi mảng nếu không được chọn
-      return { ...prev, [name]: newSkills };
-    });
-    } else {
-      // Các input khác, cập nhật giá trị thông thường
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-};
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+  const handleFormSubmit = (data: FormData) => {
+    onSubmit(data);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(handleFormSubmit)}
         className="bg-white p-6 rounded shadow-lg w-96"
       >
         <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm ">Project ID</label>
+            <label className="w-1/4 block font-medium text-sm">Project ID</label>
             <input
-              name="projectID"
-              placeholder="Project ID"
-              value={formData.projectID}
-              onChange={handleChange}
-              className="w-full border p-2 rounded block"
-              required
-            />
-          </div >
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm ">Name</label>
-            <input
-              name="name"
-              placeholder="Project Name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border p-2 rounded block"
-              required
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm ">Start Date</label>
-            <input
-              name="startDate"
-              type="date"
-              value={formData.startDate}
-              onChange={handleChange}
+              {...register("projectID")}
               className="w-full border p-2 rounded"
-              required
+              placeholder="Project ID"
             />
+            {errors.projectID && (
+              <p className="text-red-500 text-sm">{errors.projectID.message}</p>
+            )}
           </div>
+
+          <div className="flex items-center gap-4">
+            <label className="w-1/4 block font-medium text-sm">Name</label>
+            <input
+              {...register("name")}
+              className="w-full border p-2 rounded"
+              placeholder="Project Name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name.message}</p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <label className="w-1/4 block font-medium text-sm">Start Date</label>
+            <input
+              type="date"
+              {...register("startDate")}
+              className="w-full border p-2 rounded"
+            />
+            {errors.startDate && (
+              <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+            )}
+          </div>
+
           <div className="flex items-center gap-4">
             <label className="w-1/4 block font-medium text-sm">End Date</label>
             <input
-              name="endDate"
               type="date"
-              value={formData.endDate}
-              onChange={handleChange}
+              {...register("endDate")}
               className="w-full border p-2 rounded"
-              required
+            />
+            {errors.endDate && (
+              <p className="text-red-500 text-sm">{errors.endDate.message}</p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <label className="w-1/4 block font-medium text-sm">Status</label>
+            <input
+              {...register("status")}
+              className="w-full border p-2 rounded"
+              value="new"
+              readOnly
             />
           </div>
-          <div className="flex items-center gap-4">
-          <label className="w-1/4 block font-medium text-sm">Status</label>
-          <input
-            name="status"
-            placeholder="Status"
-            value= "new"
-            onChange={handleChange}
-            className="w-full border p-2 rounded outline-none"
-            required
-            readOnly
-          />
-          </div>
+
           <div>
-          <label className="block font-medium text-sm mb-2">Skills</label>
-          <div className="flex flex-wrap gap-4">
-            {["React", "Node.js", "TypeScript", "CSS"].map((skill) => (
-              <label key={skill} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  name="skill"
-                  value={skill}
-                  checked={formData.skill.includes(skill)}  // Kiểm tra nếu kỹ năng đã được chọn
-                  onChange={handleChange}  // Xử lý thay đổi
-                  className="form-checkbox h-5 w-5 text-blue-600"
-                />
-                <span>{skill}</span>
-              </label>
-            ))}
+            <label className="block font-medium text-sm mb-2">Skills</label>
+            <div className="flex flex-wrap gap-4">
+              {skills.map((skill) => (
+                <label key={skill} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={skill}
+                    {...register("skill")}
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                  <span>{skill}</span>
+                </label>
+              ))}
+            </div>
+            {errors.skill && (
+              <p className="text-red-500 text-sm">{errors.skill.message}</p>
+            )}
           </div>
-</div>
-
-
-
         </div>
+
         <div className="flex justify-end mt-4 gap-2">
           <button
             type="button"
