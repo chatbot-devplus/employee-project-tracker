@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -106,9 +106,10 @@ const employeesListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            <button 
-            onClick={() => setShowForm(true)}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
+            <button
+              onClick={() => setShowForm(true)}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight"
+            >
               <Image src="/create.png" alt="" width={14} height={14} />
             </button>
           </div>
@@ -123,4 +124,3 @@ const employeesListPage = () => {
 };
 
 export default employeesListPage;
-

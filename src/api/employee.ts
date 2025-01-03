@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
-import { v4 as uuidv4 } from "uuid";  // Import uuidv4 từ thư viện uuid
+import { v4 as uuidv4 } from "uuid"; // Import uuidv4 từ thư viện uuid
 
 const createEmployee = async (data: any) => {
   try {
@@ -7,15 +8,17 @@ const createEmployee = async (data: any) => {
     const generatedId = uuidv4();
 
     // Chèn dữ liệu vào bảng employees
-    const { data: insertedData, error } = await supabase.from("employees").insert([
-      {
-        id: generatedId,  // ID mới tạo
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        joiningDate: data.joiningDate,
-      },
-    ]);
+    const { data: insertedData, error } = await supabase
+      .from("employees")
+      .insert([
+        {
+          id: generatedId, // ID mới tạo
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          joiningDate: data.joiningDate,
+        },
+      ]);
 
     // Kiểm tra nếu có lỗi
     if (error) {

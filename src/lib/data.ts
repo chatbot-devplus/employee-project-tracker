@@ -107,4 +107,3 @@ export const employeesData = [
     address: "123 Main St, Anytown, USA",
   },
 ];
-
