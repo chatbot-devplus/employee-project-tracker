@@ -1,3 +1,4 @@
+export const role = "admin";
 export const employeesData = [
   {
     id: 1,
