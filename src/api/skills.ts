@@ -13,5 +13,4 @@ const getAllSkills = async () => {
   }
 };
 
-
 export { getAllSkills };
