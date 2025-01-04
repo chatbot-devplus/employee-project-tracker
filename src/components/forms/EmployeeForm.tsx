@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -23,12 +24,14 @@ type Inputs = z.infer<typeof schema>;
 
 const EmployeeForm = ({
   type,
-  employee,
+  data,
   closeModal,
+  onItemChange,
 }: {
   type: "create" | "update";
-  employee?: any;
+  data?: any;
   closeModal: () => void;
+  onItemChange?: (newEmployee: any, action: "create" | "update") => void;
 }) => {
   const {
     register,
@@ -37,23 +40,31 @@ const EmployeeForm = ({
   } = useForm<Inputs>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: employee?.name || "",
-      email: employee?.email || "",
-      role: employee?.role || "",
-      joiningDate: employee?.joiningDate || "",
+      name: data?.name || "",
+      email: data?.email || "",
+      role: data?.role || "",
+      joiningDate: data?.joiningDate || "",
     },
   });
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
+      let newEmployee;
       if (type === "create") {
-        await createEmployee(formData);
-      } else if (type === "update" && employee?.id) {
-        await updateEmployee(employee.id, formData);
+        newEmployee = await createEmployee(formData);
+         if (newEmployee) {
+           onItemChange && onItemChange(newEmployee, "create");
+         }
+      } else if (type === "update" && data?.id) {
+       newEmployee = await updateEmployee(data.id, formData);
+          if (newEmployee) {
+           onItemChange && onItemChange(newEmployee, "update");
+         }
       }
       closeModal();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
+      alert(error.message || "An error occurred while performing the operation.");
     }
   });
 
@@ -71,14 +82,14 @@ const EmployeeForm = ({
           <InputField
             label="Name"
             name="name"
-            defaultValue={employee?.name || ""}
+            defaultValue={data?.name || ""}
             register={register}
             error={errors?.name}
           />
           <InputField
             label="Role"
             name="role"
-            defaultValue={employee?.role || ""}
+            defaultValue={data?.role || ""}
             register={register}
             error={errors?.role}
           />
@@ -87,7 +98,7 @@ const EmployeeForm = ({
           <InputField
             label="Email"
             name="email"
-            defaultValue={employee?.email || ""}
+            defaultValue={data?.email || ""}
             register={register}
             error={errors?.email}
             type="email"
@@ -95,7 +106,7 @@ const EmployeeForm = ({
           <InputField
             label="Start Day"
             name="joiningDate"
-            defaultValue={employee?.joiningDate || ""}
+            defaultValue={data?.joiningDate || ""}
             register={register}
             error={errors.joiningDate}
             type="date"

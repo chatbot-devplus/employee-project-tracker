@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import Table from "../../../components/Table";
@@ -44,28 +44,47 @@ const columns = [
 
 const employeesListPage = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading,setLoading] = useState(false);
-  const messageApi=message;
-  useEffect(()=>{
-    const fetchEmployees = async() =>{
-      try {
-        setLoading(true);
-        const dataEmployees = await getAllEmployees();
-        setEmployees(dataEmployees as Employee[]);
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-        // Hiển thị thông báo lỗi cho người dùng
-        messageApi.open({
-          type: "error",
-          content: "Failed to fetch employees. Please try again later.",
-        });
-      } finally {
-        setLoading(false);
-      }
+  const [loading, setLoading] = useState(false);
+  const messageApi = message;
 
-    };
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true);
+      const dataEmployees = await getAllEmployees();
+      setEmployees(dataEmployees as Employee[]);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch employees. Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
     fetchEmployees();
-  },[])
+  }, []);
+
+
+
+  const handleEmployeeChange = (newEmployee: Employee, action: "create" | "update" | "delete") => {
+    if(action === "create") {
+      setEmployees(prevEmployees => [...prevEmployees, newEmployee])
+    }
+    if (action === "update") {
+      setEmployees(prevEmployees =>
+        prevEmployees.map(employee =>
+          employee.id === newEmployee.id ? newEmployee : employee
+        )
+      );
+    }
+    if(action === "delete"){
+       setEmployees(prevEmployees => prevEmployees.filter(employee => employee.id !== newEmployee.id));
+    }
+  };
   const renderRow = (item: Employee) => (
     <tr
       key={item.id}
@@ -86,15 +105,17 @@ const employeesListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <FormModal table="employee" type="delete" id={item.id}/>
-          <FormModal table="employee" type="update" employee={item} />
+          <FormModal table="employee" type="delete" id={item.id} onItemChange={handleEmployeeChange} />
+          <FormModal table="employee" type="update" data={item} onItemChange={handleEmployeeChange}/>
         </div>
       </td>
     </tr>
   );
+
   if (loading) {
-    return <Spin/>;
+    return <Spin />;
   }
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
@@ -103,7 +124,7 @@ const employeesListPage = () => {
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           {/* <TableSearch /> */}
           <div className="flex items-center gap-4 self-end">
-            <FormModal table="employee" type="create" />
+          <FormModal table="employee" type="create" onItemChange={handleEmployeeChange}/>
           </div>
         </div>
       </div>
