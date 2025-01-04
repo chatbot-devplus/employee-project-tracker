@@ -7,6 +7,7 @@ import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
 import React, { useState } from "react";
 import CreateProjectForm from "../../../components/CreateProjectForm";
+import { createProject } from "../../../api/project";
 
 export type project = {
   id: number;
@@ -54,8 +55,7 @@ const columns = [
 const employeesListPage = () => {
   const [showForm, setShowForm] = useState(false);
   const handleCreateProject = (newProject: any) => {
-    console.log("New Project:", newProject);
-    // Logic lưu trữ project mới (có thể cập nhật state hoặc gọi API)
+    createProject(newProject);
   };
   const renderRow = (item: project) => (
     <tr

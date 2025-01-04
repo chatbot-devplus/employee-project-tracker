@@ -1,17 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { getAllSkills } from "../api/skills";
 
 const schema = z.object({
-  projectID: z.string().min(1, { message: "Project ID is required!" }),
   name: z
     .string()
     .min(3, { message: "Project name must be at least 3 characters long!" }),
+  description: z.string().nonempty({ message: "Description is required!" }),
   startDate: z.string().nonempty({ message: "Start date is required!" }),
-  endDate: z.string().nonempty({ message: "End date is required!" }),
+  endDate: z.string(),
   status: z.string().nonempty({ message: "Status is required!" }),
-  skill: z
+  skills: z
     .array(z.string())
     .nonempty({ message: "At least one skill is required!" }),
 });
@@ -31,16 +32,28 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      projectID: "",
+      description: "",
       name: "",
       startDate: "",
       endDate: "",
       status: "new",
-      skill: [],
+      skills: [],
     },
   });
 
-  const skills = ["React", "Node.js", "TypeScript", "CSS"];
+  const [skills, setSkills] = useState<Skill[]>([]);
+  useEffect(() => {
+    const fetchSkills = async () => {
+      const data = await getAllSkills();
+      if (Array.isArray(data)) {
+        console.log(data);
+        setSkills(data);
+      } else {
+        console.log("Error fetching skills");
+      }
+    };
+    fetchSkills();
+  }, []);
 
   const handleFormSubmit = (data: FormData) => {
     onSubmit(data);
@@ -60,24 +73,28 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
               Project ID
             </label>
             <input
-              {...register("projectID")}
+              {...register("name")}
               className="w-full border p-2 rounded"
-              placeholder="Project ID"
+              placeholder="Project name"
             />
-            {errors.projectID && (
-              <p className="text-red-500 text-sm">{errors.projectID.message}</p>
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name.message}</p>
             )}
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-1/4 block font-medium text-sm">Name</label>
-            <input
-              {...register("name")}
+            <label className="w-1/4 block font-medium text-sm">
+              Description
+            </label>
+            <textarea
+              {...register("description")}
               className="w-full border p-2 rounded"
-              placeholder="Project Name"
+              placeholder="Description"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
+            {errors.description && (
+              <p className="text-red-500 text-sm">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -121,19 +138,19 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
             <label className="block font-medium text-sm mb-2">Skills</label>
             <div className="flex flex-wrap gap-4">
               {skills.map((skill) => (
-                <label key={skill} className="flex items-center space-x-2">
+                <label key={skill.id} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    value={skill}
-                    {...register("skill")}
+                    value={skill.id}
+                    {...register("skills")}
                     className="form-checkbox h-5 w-5 text-blue-600"
                   />
-                  <span>{skill}</span>
+                  <span>{skill.name}</span>
                 </label>
               ))}
             </div>
-            {errors.skill && (
-              <p className="text-red-500 text-sm">{errors.skill.message}</p>
+            {errors.skills && (
+              <p className="text-red-500 text-sm">{errors.skills.message}</p>
             )}
           </div>
         </div>
