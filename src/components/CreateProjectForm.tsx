@@ -46,10 +46,7 @@ const CreateProjectForm: React.FC<Props> = ({ onSubmit, onClose }) => {
     const fetchSkills = async () => {
       const data = await getAllSkills();
       if (Array.isArray(data)) {
-        console.log(data);
         setSkills(data);
-      } else {
-        console.log("Error fetching skills");
       }
     };
     fetchSkills();

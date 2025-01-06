@@ -51,8 +51,6 @@ const createProject = async (data: ProjectData) => {
       .insert(projectSkills);
 
     if (skillsError) throw skillsError;
-
-    console.log("Project created and skills linked successfully!");
   } catch (error) {
     console.error("Error creating project:", error.message);
   }
