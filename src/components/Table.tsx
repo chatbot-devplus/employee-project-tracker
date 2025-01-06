@@ -3,19 +3,19 @@ const Table = ({
   renderRow,
   data,
 }: {
-  columns: { header: string; accessor: string; className?: string }[];
+  columns: { key: string; label: string; className?: string }[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderRow: (item: any) => React.ReactNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any[];
 }) => {
   return (
-    <table className="w-full mt-4">
-      <thead>
+    <table className="w-full mt-4 border-separate border-spacing-y-3">
+      <thead className="border-separate border-spacing-y-10">
         <tr className="text-left text-gray-500 text-sm">
           {columns.map((col) => (
-            <th key={col.accessor} className={col.className}>
-              {col.header}
+            <th key={col.key} className={col.className}>
+              {col.label}
             </th>
           ))}
         </tr>
