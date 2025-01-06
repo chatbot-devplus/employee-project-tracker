@@ -6,11 +6,10 @@ import { projectsData } from "../../../lib/projectsData";
 import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
 import React, { useState } from "react";
-import CreateProjectForm from "../../../components/CreateProjectForm";
-import { createProject } from "../../../api/project";
-
+// import ProjectForm from "../../../components/forms/ProjectForm";
+import FormModal from "../../../components/FormModal";
 export type project = {
-  id: number;
+  id: string;
   projectID: string;
   name: string;
   startDate: string;
@@ -22,41 +21,37 @@ export type project = {
 
 const columns = [
   {
-    header: "project ID",
-    accessor: "projectID",
+    label: "project ID",
+    key: "projectID",
     className: "hidden md:table-cell",
   },
   {
-    header: "Project name",
-    accessor: "name",
+    label: "Project name",
+    key: "name",
     className: "hidden lg:table-cell",
   },
   {
-    header: "status",
-    accessor: "status",
+    label: "status",
+    key: "status",
     className: "hidden lg:table-cell",
   },
   {
-    header: "Start date",
-    accessor: "startDate",
+    label: "Start date",
+    key: "startDate",
     className: "hidden lg:table-cell",
   },
   {
-    header: "End date",
-    accessor: "endDate",
+    label: "End date",
+    key: "endDate",
     className: "hidden lg:table-cell",
   },
   {
-    header: "Actions",
-    accessor: "action",
+    label: "Actions",
+    key: "action",
   },
 ];
 
-const employeesListPage = () => {
-  const [showForm, setShowForm] = useState(false);
-  const handleCreateProject = (newProject: any) => {
-    createProject(newProject);
-  };
+const projectsListPage = () => {
   const renderRow = (item: project) => (
     <tr
       key={item.id}
@@ -69,17 +64,14 @@ const employeesListPage = () => {
       <td className="hidden md:table-cell">{item.endDate}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/employees/${item.id}`}>
+          <Link href={`/projects/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            <Image src="/delete.png" alt="" width={16} height={16} />
-          </button>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            <Image src="/update.png" alt="" width={16} height={16} />
-          </button>
+          <FormModal table="project" type="update" data={item} />
+          <FormModal table="project" type="delete" id={item.id} />
+
         </div>
       </td>
     </tr>
@@ -87,13 +79,7 @@ const employeesListPage = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {/* Hiển thị form khi nhấn nút */}
-      {showForm && (
-        <CreateProjectForm
-          onSubmit={handleCreateProject}
-          onClose={() => setShowForm(false)}
-        />
-      )}
+
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
@@ -103,24 +89,20 @@ const employeesListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/filter.png" alt="" width={14} height={14} />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight"
-            >
-              <Image src="/create.png" alt="" width={14} height={14} />
-            </button>
+            <FormModal table="project" type="create" />
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={projectsData} />
+      <Table columns= {columns} renderRow={renderRow} data={projectsData} />
       {/* PAGINATION */}
       <Pagination />
     </div>
   );
 };
 
-export default employeesListPage;
+export default projectsListPage;

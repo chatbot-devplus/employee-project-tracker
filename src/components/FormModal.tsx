@@ -7,6 +7,10 @@ import Image from "next/image";
 import { JSX, useState } from "react";
 import { deleteEmployee } from "../api/employee";
 
+
+const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
+  loading: () => <h1>Loading...</h1>,
+})
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -15,6 +19,7 @@ const forms: {
   [key: string]: (type: "create" | "update", data: any) => JSX.Element;
 } = {
   employee: (type, data) => <EmployeeForm type={type} {...data} />,
+  project: (type, data) => <ProjectForm type={type} {...data} />, // Added ProjectForm handler
 };
 
 const FormModal = ({
@@ -24,7 +29,7 @@ const FormModal = ({
   id,
   onItemChange,
 }: {
-  table: "employee"|"project";
+  table: "employee" | "project";
   type: "create" | "update" | "delete";
   data?: any;
   id?: string;
@@ -67,6 +72,7 @@ const FormModal = ({
           Delete
         </button>
       </form>
+      
     ) : type === "create" || type === "update" ? (
       forms[table](type, { data, closeModal, onItemChange })
     ) : (
