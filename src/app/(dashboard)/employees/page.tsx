@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import Table from "../../../components/Table";
@@ -44,10 +44,10 @@ const columns = [
 
 const employeesListPage = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading,setLoading] = useState(false);
-  const messageApi=message;
-  useEffect(()=>{
-    const fetchEmployees = async() =>{
+  const [loading, setLoading] = useState(false);
+  const messageApi = message;
+  useEffect(() => {
+    const fetchEmployees = async () => {
       try {
         setLoading(true);
         const dataEmployees = await getAllEmployees();
@@ -62,10 +62,9 @@ const employeesListPage = () => {
       } finally {
         setLoading(false);
       }
-
     };
     fetchEmployees();
-  },[])
+  }, []);
   const renderRow = (item: Employee) => (
     <tr
       key={item.id}
@@ -93,7 +92,7 @@ const employeesListPage = () => {
     </tr>
   );
   if (loading) {
-    return <Spin/>;
+    return <Spin />;
   }
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
