@@ -52,19 +52,6 @@ const columns = [
 ];
 
 const projectsListPage = () => {
-  const [modalType, setModalType] = useState<"create" | "update" | "delete" |null>(null);
-  const [selectProject, setSelectProject] = useState<project | null>(null);
-
-  const handleShowForm = (type: "create" | "update" | "delete", project?: project) => {
-    setModalType(type);
-    setSelectProject(project || null);
-    console.log("đang clickon");
-  }
-  const handleCloseForm = () => {
-    setModalType(null);
-    setSelectProject(null);
-  }
-
   const renderRow = (item: project) => (
     <tr
       key={item.id}
