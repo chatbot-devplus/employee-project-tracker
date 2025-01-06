@@ -3,7 +3,7 @@ import * as gemini_key from 'dotenv';
 
 gemini_key.config();
 const MODEL_NAME = 'gemini-1.5-flash-001'
-const API_KEY = process.env.NEXT_PUBLIC_DOTENV_KEY 
+const API_KEY = process.env.NEXT_GEMINI_KEY 
 
 async function runChat(prompt) {
   const genAI = new GoogleGenerativeAI(API_KEY)
