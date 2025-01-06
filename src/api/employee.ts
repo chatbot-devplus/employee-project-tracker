@@ -48,4 +48,4 @@ const createEmployee = async (data: any) => {
   }
 };
 
-export { createEmployee,getAllEmployees };
+export { createEmployee, getAllEmployees };
