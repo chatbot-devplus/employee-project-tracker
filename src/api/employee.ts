@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
-import { v4 as uuidv4 } from "uuid"; // Import uuidv4 từ thư viện uuid
+import { v4 as uuidv4 } from "uuid";
 
+// Get All Employees
 const getAllEmployees = async () => {
   try {
     const { data, error } = await supabase.from("employees").select("*");
@@ -15,37 +16,76 @@ const getAllEmployees = async () => {
   }
 };
 
+// Create Employee
 const createEmployee = async (data: any) => {
   try {
-    // Sử dụng uuidv4 để tạo ID
     const generatedId = uuidv4();
-
-    // Chèn dữ liệu vào bảng employees
     const { data: insertedData, error } = await supabase
       .from("employees")
       .insert([
         {
-          id: generatedId, // ID mới tạo
+          id: generatedId,
           name: data.name,
           email: data.email,
           role: data.role,
           joiningDate: data.joiningDate,
         },
-      ]);
+      ])
+      .select("*"); // Select the inserted row to return it
 
-    // Kiểm tra nếu có lỗi
     if (error) {
       throw new Error(error.message || "Unknown error");
     }
 
-    // Hiển thị thông báo thành công
-    alert("Employee created successfully!");
-    console.log("Data inserted:", insertedData);
+    return insertedData ? insertedData[0] : null; // Return the inserted employee
   } catch (error: any) {
-    // Xử lý lỗi nếu có
     console.error("Error inserting data:", error);
-    alert(error.message || "An error occurred while creating the employee.");
+    throw new Error(error.message || "An error occurred while creating the employee.");
   }
 };
 
-export { createEmployee,getAllEmployees };
+
+// Update Employee
+const updateEmployee = async (id: string, updatedData: any) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .update({
+        name: updatedData.name,
+        email: updatedData.email,
+        role: updatedData.role,
+        joiningDate: updatedData.joiningDate,
+      })
+      .eq("id", id)
+      .select("*"); // Select the updated row to return it
+
+    if (error) {
+      throw new Error(error.message || "Unknown error");
+    }
+
+    return data ? data[0] : null; // Return the updated employee
+  } catch (error: any) {
+    console.error("Error updating employee:", error);
+    throw new Error(error.message || "An error occurred while updating the employee.");
+  }
+};
+
+
+// Delete Employee
+const deleteEmployee = async (id: string) => {
+    try {
+      const { error } = await supabase.from("employees").delete().eq("id", id);
+
+      if (error) {
+          throw new Error(error.message || "Unknown error");
+      }
+
+    // Return true if the delete was successful (no error)
+    return true;
+    } catch (error: any) {
+        console.error("Error deleting employee:", error);
+        throw new Error(error.message || "An error occurred while deleting the employee.");
+    }
+};
+
+export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee };

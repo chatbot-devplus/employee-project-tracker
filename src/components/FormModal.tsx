@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { JSX, useState } from "react";
+import { deleteEmployee } from "../api/employee";
 
 
 const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
@@ -25,11 +27,13 @@ const FormModal = ({
   type,
   data,
   id,
+  onItemChange,
 }: {
   table: "employee" | "project";
   type: "create" | "update" | "delete";
   data?: any;
   id?: string;
+  onItemChange?: (newItem: any, action: "create" | "update" | "delete") => void;
 }) => {
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
@@ -42,18 +46,35 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
   const Form = () => {
+    const handleDelete = async () => {
+      if (id) {
+        try {
+          if (table==="employee"){
+            await deleteEmployee(id);
+          }
+          else if(table==="project"){
+            //callDeleteProject
+          }
+          closeModal();
+          onItemChange && onItemChange({id} , "delete");
+        } catch (error) {
+          console.error("Error deleting employee:", error);
+           alert("Failed to delete the employee. Please try again later.");
+        }
+      }
+    }
     return type === "delete" && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
+      <form onSubmit={handleDelete} className="p-4 flex flex-col gap-4">
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        <button  className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
           Delete
         </button>
       </form>
       
     ) : type === "create" || type === "update" ? (
-      forms[table](type, { ...data, closeModal })
+      forms[table](type, { data, closeModal, onItemChange })
     ) : (
       "Form not found!"
     );
