@@ -75,7 +75,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-5 bg-black text-lamaGreenLight font-bold  text-sm rounded-lg h-12 w-full cursor-pointer"
+            className="mt-5 bg-black text-lamaGreen font-bold  text-sm rounded-lg h-12 w-full cursor-pointer"
           >
             {loading ? "Logining..." : "Login"}
           </button>

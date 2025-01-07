@@ -70,9 +70,9 @@ const ChatBox: React.FC = () => {
         <div
           className={`user ${
             isExpanded ? "visible ml-0" : "hidden -ml-[100px]"
-          } transition-all duration-500 bg-green-900 shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between break-words`}
+          } transition-all duration-500 bg-lamaGreen shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between break-words`}
         >
-          <i className="bi bi-person-circle mr-2"></i> Adnan Khan
+          <i className="bi bi-person-circle mr-2"></i> Chat search
           <i className="bi bi-x-lg cursor-pointer " onClick={closeModel}></i>
         </div>
       </div>
@@ -93,6 +93,7 @@ const ChatBox: React.FC = () => {
                   src="/chatbot.gif"
                   alt="Chatbot Avatar"
                   className="w-10 h-8 rounded-full"
+
                 />
               )}
               <div
