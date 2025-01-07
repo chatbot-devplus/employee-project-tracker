@@ -93,7 +93,6 @@ const ChatBox: React.FC = () => {
                   src="/chatbot.gif"
                   alt="Chatbot Avatar"
                   className="w-10 h-8 rounded-full"
-
                 />
               )}
               <div

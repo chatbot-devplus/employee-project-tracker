@@ -95,4 +95,27 @@ const deleteEmployee = async (id: string) => {
     );
   }
 };
-export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee };
+// Search Employees
+const searchEmployees = async (query: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .or(`name.ilike.%${query}%,email.ilike.%${query}%,role.ilike.%${query}%`)
+      .eq("isDestroy", false);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error searching employees:", error);
+    return [];
+  }
+};
+export {
+  createEmployee,
+  getAllEmployees,
+  updateEmployee,
+  deleteEmployee,
+  searchEmployees,
+};
