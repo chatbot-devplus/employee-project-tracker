@@ -19,6 +19,49 @@ const getAllEmployees = async () => {
   }
 };
 
+const getInforFromProject = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employee_projects")
+      .select(
+        `
+        *,
+        employees (*),  
+        projects (*)    
+      `,
+      )
+      .eq("employeeId", id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Data của employee project: ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching employee projects:", error);
+    return [];
+  }
+};
+
+// Get id Employee
+
+const getIDEmployees = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("id", id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+};
+
 // Create Employee
 const createEmployee = async (data: any) => {
   try {
@@ -118,4 +161,6 @@ export {
   updateEmployee,
   deleteEmployee,
   searchEmployees,
+  getIDEmployees,
+  getInforFromProject,
 };
