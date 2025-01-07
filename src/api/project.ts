@@ -24,7 +24,7 @@ const createProject = async (data: ProjectData) => {
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .insert({
-        id: projectGeneratedId,
+        id: projectGeneratedId, 
         name,
         description,
         startDate: startDate,
@@ -56,4 +56,29 @@ const createProject = async (data: ProjectData) => {
   }
 };
 
-export { createProject, getAllProjects };
+const deleteProjectSoft = async (projectId: string) => {
+  try {
+    // Đánh dấu xóa mềm cho project
+    const { error: projectError } = await supabase
+      .from("projects")
+      .update({ isDestroy: true })
+      .eq("id", projectId);
+
+    if (projectError) {
+      throw new Error("Error soft deleting project: " + projectError.message);
+    }
+
+    return {
+      success: true,
+      message: "Project soft deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error soft deleting project:", error);
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export { createProject, getAllProjects, deleteProjectSoft};
