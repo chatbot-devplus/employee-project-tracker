@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { projectsData } from "../../../lib/projectsData";
 import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
-import React, { useState } from "react";
-// import ProjectForm from "../../../components/forms/ProjectForm";
+import React, { useEffect, useState } from "react";
 import FormModal from "../../../components/FormModal";
+import { getAllProjects } from "../../../api/project";
 export type project = {
   id: string;
   projectID: string;
@@ -52,12 +51,32 @@ const columns = [
 ];
 
 const projectsListPage = () => {
+
+  const [reload, setReload] = useState(false);
+
+  const [projects, setProjects] = useState<project[]>([]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await getAllProjects();
+        setProjects(response);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, [reload]);
+
+  const onItemChange = () => {
+    setReload(!reload);
+  };
+
   const renderRow = (item: project) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="hidden md:table-cell">{item.projectID}</td>
+      <td className="hidden md:table-cell">{item.id}</td>
       <td className="hidden md:table-cell">{item.name}</td>
       <td className="hidden md:table-cell">{item.status}</td>
       <td className="hidden md:table-cell">{item.startDate}</td>
@@ -69,8 +88,8 @@ const projectsListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <FormModal table="project" type="update" data={item} />
-          <FormModal table="project" type="delete" id={item.id} />
+          <FormModal table="project" type="update" data={item} onItemChange={onItemChange} />
+          <FormModal table="project" type="delete" id={item.id} onItemChange={onItemChange} />
 
         </div>
       </td>
@@ -93,12 +112,12 @@ const projectsListPage = () => {
               className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            <FormModal table="project" type="create" />
+            <FormModal table="project" type="create" onItemChange={onItemChange}/>
           </div>
         </div>
       </div>
       {/* LIST */}
-      <Table columns= {columns} renderRow={renderRow} data={projectsData} />
+      <Table columns= {columns} renderRow={renderRow} data={projects} />
       {/* PAGINATION */}
       <Pagination />
     </div>

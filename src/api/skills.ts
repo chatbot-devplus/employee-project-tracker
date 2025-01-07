@@ -8,4 +8,15 @@ const getAllSkills = async () => {
   return data;
 };
 
-export { getAllSkills };
+const getSkillsByProjectId = async (projectId: string) => {
+  const { data, error } = await supabase
+    .from("project_skills")
+    .select("skillId")
+    .eq("projectId", projectId);
+  if (error) {
+    throw error;
+  }
+  return data as { skillId: string }[];
+};
+
+export { getAllSkills, getSkillsByProjectId };

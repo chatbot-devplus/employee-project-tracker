@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { JSX, useState } from "react";
 import { deleteEmployee } from "../api/employee";
+import { deleteProject } from "../api/project";
 
 
 const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
@@ -53,7 +54,7 @@ const FormModal = ({
             await deleteEmployee(id);
           }
           else if(table==="project"){
-            //callDeleteProject
+            await deleteProject(id);
           }
           closeModal();
           onItemChange && onItemChange({id} , "delete");
