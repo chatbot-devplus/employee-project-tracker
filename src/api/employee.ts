@@ -16,6 +16,47 @@ const getAllEmployees = async () => {
   }
 };
 
+const getInforFromProject = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employee_projects")
+      .select(`
+        *,
+        employees (*),  
+        projects (*)    
+      `)
+      .eq("employeeId", id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Data của employee project: ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching employee projects:", error);
+    return [];
+  }
+};
+
+
+
+// Get id Employee
+
+const getIDEmployees = async (id) => {
+  try {
+    const { data, error } = await supabase.from("employees").select("*")
+      .eq("id", id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+}
+
 // Create Employee
 const createEmployee = async (data: any) => {
   try {
@@ -73,19 +114,19 @@ const updateEmployee = async (id: string, updatedData: any) => {
 
 // Delete Employee
 const deleteEmployee = async (id: string) => {
-    try {
-      const { error } = await supabase.from("employees").delete().eq("id", id);
+  try {
+    const { error } = await supabase.from("employees").delete().eq("id", id);
 
-      if (error) {
-          throw new Error(error.message || "Unknown error");
-      }
+    if (error) {
+      throw new Error(error.message || "Unknown error");
+    }
 
     // Return true if the delete was successful (no error)
     return true;
-    } catch (error: any) {
-        console.error("Error deleting employee:", error);
-        throw new Error(error.message || "An error occurred while deleting the employee.");
-    }
+  } catch (error: any) {
+    console.error("Error deleting employee:", error);
+    throw new Error(error.message || "An error occurred while deleting the employee.");
+  }
 };
 
-export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee };
+export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee, getIDEmployees, getInforFromProject };
