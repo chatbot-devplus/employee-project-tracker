@@ -2,26 +2,37 @@
 import React, { useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import TextArea from "antd/lib/input/TextArea";
-import runChat from '../app/config/gemini';
+import runChat from "../app/config/gemini";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 
 const ChatBox: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<{ content: string; sender: "user" | "bot"; timestamp: string }[]>([]);
+  const [messages, setMessages] = useState<
+    { content: string; sender: "user" | "bot"; timestamp: string }[]
+  >([]);
 
   const onSent = async (prompt: string) => {
     if (!prompt.trim()) return;
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-    setInput('');
+    setInput("");
     setLoading(true);
-    setMessages((prev) => [...prev, { content: prompt, sender: "user", timestamp }]);
+    setMessages((prev) => [
+      ...prev,
+      { content: prompt, sender: "user", timestamp },
+    ]);
     try {
       const response = await runChat(prompt);
-      setMessages((prev) => [...prev, { content: response, sender: "bot", timestamp }]);
+      setMessages((prev) => [
+        ...prev,
+        { content: response, sender: "bot", timestamp },
+      ]);
     } catch (error) {
       console.error("Error while running chat:", error);
     } finally {
@@ -57,17 +68,19 @@ const ChatBox: React.FC = () => {
           </div>
         )}
         <div
-          className={`user ${isExpanded ? "visible ml-0" : "hidden -ml-[100px]"
-            } transition-all duration-500 bg-green-900 shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between break-words`}
+          className={`user ${
+            isExpanded ? "visible ml-0" : "hidden -ml-[100px]"
+          } transition-all duration-500 bg-lamaGreen shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between break-words`}
         >
-          <i className="bi bi-person-circle mr-2"></i> Adnan Khan
+          <i className="bi bi-person-circle mr-2"></i> Chat search
           <i className="bi bi-x-lg cursor-pointer " onClick={closeModel}></i>
         </div>
       </div>
 
       <div
-        className={`messenger bg-white border border-green-200 shadow-lg p-4 rounded-lg mt-2 ${isExpanded ? "h-[390px] w-[370px] visible" : "h-0 w-0 invisible"
-          } transition-all duration-700`}
+        className={`messenger bg-white border border-green-200 shadow-lg p-4 rounded-lg mt-2 ${
+          isExpanded ? "h-[390px] w-[370px] visible" : "h-0 w-0 invisible"
+        } transition-all duration-700`}
       >
         <div className="chatroom flex flex-col h-72 overflow-y-auto scrollbar-hidden pr-2 break-words">
           {messages.map((message, index) => (
@@ -83,12 +96,16 @@ const ChatBox: React.FC = () => {
                 />
               )}
               <div
-                className={`bubble ${message.sender === "user"
-                  ? "bg-green-100 text-green-800 ml-auto"
-                  : "bg-blue-100 text-gray-700"
-                  } p-3 rounded-lg w-72 whitespace-normal break-words `}
+                className={`bubble ${
+                  message.sender === "user"
+                    ? "bg-green-100 text-green-800 ml-auto"
+                    : "bg-blue-100 text-gray-700"
+                } p-3 rounded-lg w-72 whitespace-normal break-words `}
               >
-                <ReactMarkdown rehypePlugins={[rehypeRaw]} className="break-words">
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
+                  className="break-words"
+                >
                   {message.content}
                 </ReactMarkdown>
                 <div className="timestamp text-xs text-gray-500 mt-1 ml-auto flex items-center space-x-1">
@@ -97,9 +114,7 @@ const ChatBox: React.FC = () => {
                 </div>
               </div>
             </div>
-
           ))}
-
         </div>
         <div className="type-area mt-3 relative">
           <TextArea
@@ -141,4 +156,4 @@ export default ChatBox;
   .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
-`}</style>
+`}</style>;

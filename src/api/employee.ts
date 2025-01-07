@@ -5,7 +5,53 @@ import { v4 as uuidv4 } from "uuid";
 // Get All Employees
 const getAllEmployees = async () => {
   try {
-    const { data, error } = await supabase.from("employees").select("*");
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("isDestroy", false);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+};
+
+const getInforFromProject = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employee_projects")
+      .select(
+        `
+        *,
+        employees (*),  
+        projects (*)    
+      `,
+      )
+      .eq("employeeId", id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Data của employee project: ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching employee projects:", error);
+    return [];
+  }
+};
+
+// Get id Employee
+
+const getIDEmployees = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("id", id);
     if (error) {
       throw error;
     }
@@ -40,10 +86,11 @@ const createEmployee = async (data: any) => {
     return insertedData ? insertedData[0] : null; // Return the inserted employee
   } catch (error: any) {
     console.error("Error inserting data:", error);
-    throw new Error(error.message || "An error occurred while creating the employee.");
+    throw new Error(
+      error.message || "An error occurred while creating the employee.",
+    );
   }
 };
-
 
 // Update Employee
 const updateEmployee = async (id: string, updatedData: any) => {
@@ -66,26 +113,54 @@ const updateEmployee = async (id: string, updatedData: any) => {
     return data ? data[0] : null; // Return the updated employee
   } catch (error: any) {
     console.error("Error updating employee:", error);
-    throw new Error(error.message || "An error occurred while updating the employee.");
+    throw new Error(
+      error.message || "An error occurred while updating the employee.",
+    );
   }
 };
 
-
-// Delete Employee
+// Soft Delete Employee (update isDestroy to true)
 const deleteEmployee = async (id: string) => {
-    try {
-      const { error } = await supabase.from("employees").delete().eq("id", id);
-
-      if (error) {
-          throw new Error(error.message || "Unknown error");
-      }
-
-    // Return true if the delete was successful (no error)
-    return true;
-    } catch (error: any) {
-        console.error("Error deleting employee:", error);
-        throw new Error(error.message || "An error occurred while deleting the employee.");
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .update({ isDestroy: true }) // Update isDestroy to true
+      .eq("id", id)
+      .select("*");
+    if (error) {
+      throw new Error(error.message || "Unknown error");
     }
+    return data ? data[0] : null;
+  } catch (error: any) {
+    console.error("Error updating employee:", error);
+    throw new Error(
+      error.message || "An error occurred while soft deleting the employee.",
+    );
+  }
 };
-
-export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee };
+// Search Employees
+const searchEmployees = async (query: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .or(`name.ilike.%${query}%,email.ilike.%${query}%,role.ilike.%${query}%`)
+      .eq("isDestroy", false);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error searching employees:", error);
+    return [];
+  }
+};
+export {
+  createEmployee,
+  getAllEmployees,
+  updateEmployee,
+  deleteEmployee,
+  searchEmployees,
+  getIDEmployees,
+  getInforFromProject,
+};
