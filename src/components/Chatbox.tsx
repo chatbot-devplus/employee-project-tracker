@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import TextArea from "antd/lib/input/TextArea";
-import runChat from "../app/config/Gemini";
+import runChat from "../app/config/gemini";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 const ChatBox: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -68,7 +70,7 @@ const ChatBox: React.FC = () => {
         <div
           className={`user ${
             isExpanded ? "visible ml-0" : "hidden -ml-[100px]"
-          } transition-all duration-500 bg-green-900 shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between`}
+          } transition-all duration-500 bg-green-900 shadow-lg p-4 rounded-lg w-[370px] flex items-end justify-between break-words`}
         >
           <i className="bi bi-person-circle mr-2"></i> Adnan Khan
           <i className="bi bi-x-lg cursor-pointer " onClick={closeModel}></i>
@@ -80,11 +82,11 @@ const ChatBox: React.FC = () => {
           isExpanded ? "h-[390px] w-[370px] visible" : "h-0 w-0 invisible"
         } transition-all duration-700`}
       >
-        <div className="chatroom flex flex-col h-72 overflow-y-auto scrollbar-hidden pr-2">
+        <div className="chatroom flex flex-col h-72 overflow-y-auto scrollbar-hidden pr-2 break-words">
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`msg mb-3 ${message.sender === "user" ? "msg-right" : "msg-left"} flex items-start space-x-2`}
+              className={`msg mb-3 ${message.sender === "user" ? "msg-right" : "msg-left"} flex items-start space-x-2 break-words`}
             >
               {message.sender !== "user" && (
                 <img
@@ -98,9 +100,14 @@ const ChatBox: React.FC = () => {
                   message.sender === "user"
                     ? "bg-green-100 text-green-800 ml-auto"
                     : "bg-blue-100 text-gray-700"
-                } p-3 rounded-lg`}
+                } p-3 rounded-lg w-72 whitespace-normal break-words `}
               >
-                <div>{message.content}</div>
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw]}
+                  className="break-words"
+                >
+                  {message.content}
+                </ReactMarkdown>
                 <div className="timestamp text-xs text-gray-500 mt-1 ml-auto flex items-center space-x-1">
                   <span>{message.timestamp}</span>
                   <i className="bi bi-check text-green-500"></i>
