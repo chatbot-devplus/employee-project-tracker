@@ -19,6 +19,47 @@ const getAllEmployees = async () => {
   }
 };
 
+const getInforFromProject = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("employee_projects")
+      .select(`
+        *,
+        employees (*),  
+        projects (*)    
+      `)
+      .eq("employeeId", id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Data của employee project: ", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching employee projects:", error);
+    return [];
+  }
+};
+
+
+
+// Get id Employee
+
+const getIDEmployees = async (id) => {
+  try {
+    const { data, error } = await supabase.from("employees").select("*")
+      .eq("id", id);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
+  }
+}
+
 // Create Employee
 const createEmployee = async (data: any) => {
   try {
@@ -80,19 +121,20 @@ const updateEmployee = async (id: string, updatedData: any) => {
 const deleteEmployee = async (id: string) => {
   try {
     const { data, error } = await supabase
-      .from("employees")
-      .update({ isDestroy: true }) // Update isDestroy to true
-      .eq("id", id)
-      .select("*");
-    if (error) {
-      throw new Error(error.message || "Unknown error");
-    }
-    return data ? data[0] : null;
-  } catch (error: any) {
-    console.error("Error updating employee:", error);
-    throw new Error(
-      error.message || "An error occurred while soft deleting the employee.",
-    );
+    .from("employees")
+    .update({ isDestroy: true }) // Update isDestroy to true
+    .eq("id", id)
+    .select("*");
+  if (error) {
+    throw new Error(error.message || "Unknown error");
   }
+  return data ? data[0] : null;
+} catch (error: any) {
+  console.error("Error updating employee:", error);
+  throw new Error(
+    error.message || "An error occurred while soft deleting the employee.",
+  );
+}
 };
-export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee };
+
+export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee, getIDEmployees, getInforFromProject };
