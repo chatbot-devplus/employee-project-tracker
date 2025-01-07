@@ -1,10 +1,7 @@
 "use client";
-
-import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Image from "next/image";
 
 const schema = z.object({
   projectID: z.string().min(1, { message: "Project ID is required!" }),
