@@ -45,7 +45,7 @@ const columns = [
 const employeesListPage = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
-  const messageApi = message;
+  const [messageApi, contextHolder] = message.useMessage();
 
   const fetchEmployees = async () => {
     try {
@@ -63,26 +63,40 @@ const employeesListPage = () => {
     }
   };
 
-
   useEffect(() => {
     fetchEmployees();
   }, []);
 
-
-
-  const handleEmployeeChange = (newEmployee: Employee, action: "create" | "update" | "delete") => {
-    if(action === "create") {
-      setEmployees(prevEmployees => [...prevEmployees, newEmployee])
+  const handleEmployeeChange = (
+    newEmployee: Employee,
+    action: "create" | "update" | "delete",
+  ) => {
+    if (action === "create") {
+      setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+      messageApi.open({
+        type: "success",
+        content: "Employee created successfully!",
+      });
     }
     if (action === "update") {
-      setEmployees(prevEmployees =>
-        prevEmployees.map(employee =>
-          employee.id === newEmployee.id ? newEmployee : employee
-        )
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) =>
+          employee.id === newEmployee.id ? newEmployee : employee,
+        ),
       );
+      messageApi.open({
+        type: "success",
+        content: "Employee updated successfully!",
+      });
     }
-    if(action === "delete"){
-       setEmployees(prevEmployees => prevEmployees.filter(employee => employee.id !== newEmployee.id));
+    if (action === "delete") {
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((employee) => employee.id !== newEmployee.id),
+      );
+      messageApi.open({
+        type: "success",
+        content: "Employee deleted successfully!",
+      });
     }
   };
   const renderRow = (item: Employee) => (
@@ -105,8 +119,18 @@ const employeesListPage = () => {
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          <FormModal table="employee" type="delete" id={item.id} onItemChange={handleEmployeeChange} />
-          <FormModal table="employee" type="update" data={item} onItemChange={handleEmployeeChange}/>
+          <FormModal
+            table="employee"
+            type="update"
+            data={item}
+            onItemChange={handleEmployeeChange}
+          />
+          <FormModal
+            table="employee"
+            type="delete"
+            id={item.id}
+            onItemChange={handleEmployeeChange}
+          />
         </div>
       </td>
     </tr>
@@ -118,13 +142,18 @@ const employeesListPage = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+      {contextHolder}
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All employees</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           {/* <TableSearch /> */}
           <div className="flex items-center gap-4 self-end">
-          <FormModal table="employee" type="create" onItemChange={handleEmployeeChange}/>
+            <FormModal
+              table="employee"
+              type="create"
+              onItemChange={handleEmployeeChange}
+            />
           </div>
         </div>
       </div>

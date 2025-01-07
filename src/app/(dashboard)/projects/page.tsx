@@ -5,8 +5,6 @@ import Link from "next/link";
 import { projectsData } from "../../../lib/projectsData";
 import Table from "../../../components/Table";
 import Pagination from "../../../components/Pagination";
-import React, { useState } from "react";
-// import ProjectForm from "../../../components/forms/ProjectForm";
 import FormModal from "../../../components/FormModal";
 export type project = {
   id: string;
@@ -71,7 +69,6 @@ const projectsListPage = () => {
           </Link>
           <FormModal table="project" type="update" data={item} />
           <FormModal table="project" type="delete" id={item.id} />
-
         </div>
       </td>
     </tr>
@@ -79,7 +76,6 @@ const projectsListPage = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
@@ -89,8 +85,7 @@ const projectsListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/filter.png" alt="" width={14} height={14} />
             </button>
-            <button
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreenLight">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
             <FormModal table="project" type="create" />
@@ -98,7 +93,7 @@ const projectsListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns= {columns} renderRow={renderRow} data={projectsData} />
+      <Table columns={columns} renderRow={renderRow} data={projectsData} />
       {/* PAGINATION */}
       <Pagination />
     </div>
