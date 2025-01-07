@@ -23,11 +23,13 @@ const getInforFromProject = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employee_projects")
-      .select(`
+      .select(
+        `
         *,
         employees (*),  
         projects (*)    
-      `)
+      `,
+      )
       .eq("employeeId", id);
 
     if (error) {
@@ -42,13 +44,13 @@ const getInforFromProject = async (id) => {
   }
 };
 
-
-
 // Get id Employee
 
 const getIDEmployees = async (id) => {
   try {
-    const { data, error } = await supabase.from("employees").select("*")
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
       .eq("id", id);
     if (error) {
       throw error;
@@ -58,7 +60,7 @@ const getIDEmployees = async (id) => {
     console.error("Error fetching employees:", error);
     return [];
   }
-}
+};
 
 // Create Employee
 const createEmployee = async (data: any) => {
@@ -121,20 +123,44 @@ const updateEmployee = async (id: string, updatedData: any) => {
 const deleteEmployee = async (id: string) => {
   try {
     const { data, error } = await supabase
-    .from("employees")
-    .update({ isDestroy: true }) // Update isDestroy to true
-    .eq("id", id)
-    .select("*");
-  if (error) {
-    throw new Error(error.message || "Unknown error");
+      .from("employees")
+      .update({ isDestroy: true }) // Update isDestroy to true
+      .eq("id", id)
+      .select("*");
+    if (error) {
+      throw new Error(error.message || "Unknown error");
+    }
+    return data ? data[0] : null;
+  } catch (error: any) {
+    console.error("Error updating employee:", error);
+    throw new Error(
+      error.message || "An error occurred while soft deleting the employee.",
+    );
   }
-  return data ? data[0] : null;
-} catch (error: any) {
-  console.error("Error updating employee:", error);
-  throw new Error(
-    error.message || "An error occurred while soft deleting the employee.",
-  );
-}
 };
-
-export { createEmployee, getAllEmployees, updateEmployee, deleteEmployee, getIDEmployees, getInforFromProject };
+// Search Employees
+const searchEmployees = async (query: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*")
+      .or(`name.ilike.%${query}%,email.ilike.%${query}%,role.ilike.%${query}%`)
+      .eq("isDestroy", false);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error searching employees:", error);
+    return [];
+  }
+};
+export {
+  createEmployee,
+  getAllEmployees,
+  updateEmployee,
+  deleteEmployee,
+  searchEmployees,
+  getIDEmployees,
+  getInforFromProject,
+};
