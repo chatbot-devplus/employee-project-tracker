@@ -52,19 +52,21 @@ const EmployeeForm = ({
       let newEmployee;
       if (type === "create") {
         newEmployee = await createEmployee(formData);
-         if (newEmployee) {
-           onItemChange && onItemChange(newEmployee, "create");
-         }
+        if (newEmployee) {
+          onItemChange && onItemChange(newEmployee, "create");
+        }
       } else if (type === "update" && data?.id) {
-       newEmployee = await updateEmployee(data.id, formData);
-          if (newEmployee) {
-           onItemChange && onItemChange(newEmployee, "update");
-         }
+        newEmployee = await updateEmployee(data.id, formData);
+        if (newEmployee) {
+          onItemChange && onItemChange(newEmployee, "update");
+        }
       }
       closeModal();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "An error occurred while performing the operation.");
+      alert(
+        error.message || "An error occurred while performing the operation.",
+      );
     }
   });
 

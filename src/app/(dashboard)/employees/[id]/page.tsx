@@ -81,7 +81,7 @@ const SingleEmployeePage = () => {
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       <div className="w-full xl:w-2/3">
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="bg-zinc-300 py-6 px-4 rounded-md flex-1 flex gap-4  ">
+          <div className="bg-lamaGreenLight py-6 px-4 rounded-md flex-1 flex gap-4  ">
             <div className="w-1/3">
               <Image
                 src="https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinysrgb&w=1200"
@@ -91,13 +91,13 @@ const SingleEmployeePage = () => {
                 className="w-36 h-36 rounded-full object-cover"
               />
             </div>
-            {loading ? (
+            {loading ? (  
               <p>Đang tải...</p>
             ) : employees.length > 0 ? (
               employees.map((employee) => (
                 <div
                   key={employee.id}
-                  className="w-2/3 flex flex-col justify-between gap-4"
+                  className="w-2/3 flex flex-col justify-between gap-4 "
                 >
                   <h1 className="text-xl font-semibold text-gray-500">{employee.name}</h1>
                   <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
@@ -108,7 +108,7 @@ const SingleEmployeePage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Image src="/mail.png" alt="Email" width={14} height={14} />
-                    <span className="text-gray-500 text-sm truncate max-w-[150px]">
+                    <span className="text-gray-500 text-sm truncate max-w-[300px]">
                       {employee.email}
                     </span>
                   </div>
@@ -131,7 +131,7 @@ const SingleEmployeePage = () => {
             <p>Đang tải...</p>
           ) : employee_project.length > 0 ? (
             employee_project.map((employee_project) => (
-              <div className="bg-lamaPurple p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]" key={employee_project.id}>
+              <div className="bg-lamaPurple p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%] shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-200" key={employee_project.id}>
                 <Image
                   src="/task.png"
                   alt=""
@@ -171,7 +171,10 @@ const SingleEmployeePage = () => {
               </div>
             ))
           ) : (
-            <p>Không tìm thấy nhân viên với ID này.</p>
+            <p className="bg-gradient-to-r from-red-400 to-orange-400 text-white font-bold text-center p-4 rounded-lg shadow-md">
+              Nhân viên này chưa tham gia dự án nào
+            </p>
+
           )}
         </div>
       </div>

@@ -7,10 +7,9 @@ import Image from "next/image";
 import { JSX, useState } from "react";
 import { deleteEmployee } from "../api/employee";
 
-
 const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
   loading: () => <h1>Loading...</h1>,
-})
+});
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -38,7 +37,7 @@ const FormModal = ({
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"
-      ? "bg-lamaGreenLight"
+      ? "bg-lamaGreen"
       : type === "update"
         ? "bg-lamaSky"
         : "bg-lamaPurple";
@@ -49,30 +48,28 @@ const FormModal = ({
     const handleDelete = async () => {
       if (id) {
         try {
-          if (table==="employee"){
+          if (table === "employee") {
             await deleteEmployee(id);
-          }
-          else if(table==="project"){
+            onItemChange && onItemChange({ id }, "delete");
+          } else if (table === "project") {
             //callDeleteProject
           }
           closeModal();
-          onItemChange && onItemChange({id} , "delete");
         } catch (error) {
-          console.error("Error deleting employee:", error);
-           alert("Failed to delete the employee. Please try again later.");
+          console.log("Error deleting employee:", error);
+          alert("Failed to delete the employee. Please try again later.");
         }
       }
-    }
+    };
     return type === "delete" && id ? (
       <form onSubmit={handleDelete} className="p-4 flex flex-col gap-4">
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button  className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
           Delete
         </button>
       </form>
-      
     ) : type === "create" || type === "update" ? (
       forms[table](type, { data, closeModal, onItemChange })
     ) : (
