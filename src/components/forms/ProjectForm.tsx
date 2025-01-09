@@ -51,7 +51,7 @@ const ProjectForm = ({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: type === "update" ? data : { ...schema.parse({}) },
+    defaultValues: type === "update" ? data : null,
   });
 
   const [skills, setSkills] = useState<Skill[]>([]);

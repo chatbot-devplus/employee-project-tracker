@@ -8,7 +8,7 @@ const getAllEmployees = async () => {
     const { data, error } = await supabase
       .from("employees")
       .select("*")
-      .eq("isDestroy", false);
+      .eq("is_destroyed", false);
     if (error) {
       throw error;
     }
@@ -30,7 +30,7 @@ const getInforFromProject = async (id) => {
         projects (*)    
       `,
       )
-      .eq("employeeId", id);
+      .eq("employee_id", id);
 
     if (error) {
       throw error;
@@ -74,7 +74,7 @@ const createEmployee = async (data: any) => {
           name: data.name,
           email: data.email,
           role: data.role,
-          joiningDate: data.joiningDate,
+          joining_date: data.joiningDate,
         },
       ])
       .select("*"); // Select the inserted row to return it
@@ -101,7 +101,7 @@ const updateEmployee = async (id: string, updatedData: any) => {
         name: updatedData.name,
         email: updatedData.email,
         role: updatedData.role,
-        joiningDate: updatedData.joiningDate,
+        joiningDate: updatedData.joining_date,
       })
       .eq("id", id)
       .select("*"); // Select the updated row to return it
@@ -124,7 +124,7 @@ const deleteEmployee = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("employees")
-      .update({ isDestroy: true }) // Update isDestroy to true
+      .update({ is_destroy: true }) // Update isDestroy to true
       .eq("id", id)
       .select("*");
     if (error) {
@@ -145,7 +145,7 @@ const searchEmployees = async (query: string) => {
       .from("employees")
       .select("*")
       .or(`name.ilike.%${query}%,email.ilike.%${query}%,role.ilike.%${query}%`)
-      .eq("isDestroy", false);
+      .eq("is_destroy", false);
     if (error) {
       throw error;
     }
