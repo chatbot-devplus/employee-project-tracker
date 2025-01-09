@@ -9,12 +9,12 @@ import FormModal from "../../../components/FormModal";
 import { getAllProjects } from "../../../api/project";
 export type project = {
   id: string;
-  projectID: string;
+  project_id: string;
   name: string;
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   status: string;
-  is_destroy: boolean;
+  is_destroyed: boolean;
   skill: string[];
 };
 
@@ -79,8 +79,8 @@ const projectsListPage = () => {
       <td className="hidden md:table-cell">{item.id}</td>
       <td className="hidden md:table-cell">{item.name}</td>
       <td className="hidden md:table-cell">{item.status}</td>
-      <td className="hidden md:table-cell">{item.startDate}</td>
-      <td className="hidden md:table-cell">{item.endDate}</td>
+      <td className="hidden md:table-cell">{item.start_date}</td>
+      <td className="hidden md:table-cell">{item.end_date}</td>
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/projects/${item.id}`}>
