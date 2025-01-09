@@ -57,7 +57,7 @@ const createProject = async (data: any) => {
 };
 
 const updateProject = async (data: any) => {
-  const { id, name, description, startDate, endDate, status, skills } = data;
+  const { id, name, description, start_date, end_date, status, skills } = data;
 
   try {
     // Update the project details
@@ -66,8 +66,8 @@ const updateProject = async (data: any) => {
       .update({
         name,
         description,
-        start_date: startDate,
-        end_date: endDate || null,
+        start_date,
+        end_date: end_date || null,
         status,
       })
       .eq("id", id);

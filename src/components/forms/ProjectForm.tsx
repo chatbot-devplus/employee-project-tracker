@@ -14,8 +14,8 @@ const schema = z
       .string()
       .min(3, { message: "Project name must be at least 3 characters long!" }),
     description: z.string().nonempty({ message: "Description is required!" }),
-    startDate: z.string().nonempty({ message: "Start date is required!" }),
-    endDate: z.string().nullable(),
+    start_date: z.string().nonempty({ message: "Start date is required!" }),
+    end_date: z.string().nullable(),
     status: z.string().nonempty({ message: "Status is required!" }),
     skills: z
       .array(z.string())
@@ -23,11 +23,11 @@ const schema = z
   })
   .refine(
     (data) => {
-      if (!data.endDate) return true;
-      return new Date(data.endDate) >= new Date(data.startDate);
+      if (!data.end_date) return true;
+      return new Date(data.end_date) >= new Date(data.start_date);
     },
     {
-      path: ["endDate"],
+      path: ["end_date"],
       message: "End date must be after start date!",
     }
   );
@@ -73,7 +73,7 @@ const ProjectForm = ({
         try {
           const projectSkillsData = await getSkillsByProjectId(data.id);
           if (Array.isArray(projectSkillsData)) {
-            setProjectSkills(projectSkillsData.map((s) => s.skillId));
+            setProjectSkills(projectSkillsData.map((s) => s.skill_id));
           }
         } catch (error) {
           console.error("Failed to fetch project skills:", error);
@@ -179,11 +179,11 @@ const ProjectForm = ({
         <input
           id="startDate"
           type="date"
-          {...register("startDate")}
+          {...register("start_date")}
           className="w-full border p-2 rounded"
         />
-        {errors.startDate && (
-          <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+        {errors.start_date && (
+          <p className="text-red-500 text-sm">{errors.start_date.message}</p>
         )}
       </div>
 
@@ -194,11 +194,11 @@ const ProjectForm = ({
         <input
           id="endDate"
           type="date"
-          {...register("endDate")}
+          {...register("end_date")}
           className="w-full border p-2 rounded"
         />
-        {errors.endDate && (
-          <p className="text-red-500 text-sm">{errors.endDate.message}</p>
+        {errors.end_date && (
+          <p className="text-red-500 text-sm">{errors.end_date.message}</p>
         )}
       </div>
 
