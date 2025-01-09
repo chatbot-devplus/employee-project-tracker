@@ -1,7 +1,7 @@
 type Skill = {
   id: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
-  isDestroy: boolean;
+  created_at: string;
+  updated_at: string;
+  is_destroy: boolean;
 };

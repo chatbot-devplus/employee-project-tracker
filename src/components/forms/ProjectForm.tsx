@@ -1,22 +1,39 @@
 "use client";
+
+import React, { useEffect, useState, useMemo } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { getAllSkills, getSkillsByProjectId } from "../../api/skills";
+import { createProject, updateProject } from "../../api/project";
 
-const schema = z.object({
-  projectID: z.string().min(1, { message: "Project ID is required!" }),
-  name: z
-    .string()
-    .min(3, { message: "Project name must be at least 3 characters long!" }),
-  startDate: z.string().nonempty({ message: "Start date is required!" }),
-  endDate: z.string().nonempty({ message: "End date is required!" }),
-  status: z.string().nonempty({ message: "Status is required!" }),
-  skill: z
-    .array(z.string())
-    .nonempty({ message: "At least one skill is required!" }),
-});
+const schema = z
+  .object({
+    id: z.string().optional(),
+    name: z
+      .string()
+      .min(3, { message: "Project name must be at least 3 characters long!" }),
+    description: z.string().nonempty({ message: "Description is required!" }),
+    startDate: z.string().nonempty({ message: "Start date is required!" }),
+    endDate: z.string().nullable(),
+    status: z.string().nonempty({ message: "Status is required!" }),
+    skills: z
+      .array(z.string())
+      .nonempty({ message: "At least one skill is required!" }),
+  })
+  .refine(
+    (data) => {
+      if (!data.endDate) return true;
+      return new Date(data.endDate) >= new Date(data.startDate);
+    },
+    {
+      path: ["endDate"],
+      message: "End date must be after start date!",
+    }
+  );
 
 type FormData = z.infer<typeof schema>;
+type Skill = { id: string; name: string };
 
 const ProjectForm = ({
   type,
@@ -30,25 +47,91 @@ const ProjectForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      projectID: data?.projectID || "",
-      name: data?.name || "",
-      startDate: data?.startDate || "",
-      endDate: data?.endDate || "",
-      status: data?.status || "new",
-      skill: data?.skill || [],
-    },
+    defaultValues: type === "update" ? data : null,
   });
 
-  const skills = ["React", "Node.js", "TypeScript", "CSS"];
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [projectSkills, setProjectSkills] = useState<string[]>([]);
 
-  const onSubmit = (formData: FormData) => {
-    console.log(type === "create" ? "Creating..." : "Updating...", formData);
-    closeModal();
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const data = await getAllSkills();
+        if (Array.isArray(data)) setSkills(data);
+      } catch (error) {
+        console.error("Failed to fetch skills:", error);
+      }
+    };
+
+    if (type === "update" && data) {
+      const fetchProjectSkills = async () => {
+        try {
+          const projectSkillsData = await getSkillsByProjectId(data.id);
+          if (Array.isArray(projectSkillsData)) {
+            setProjectSkills(projectSkillsData.map((s) => s.skillId));
+          }
+        } catch (error) {
+          console.error("Failed to fetch project skills:", error);
+        }
+      };
+      fetchProjectSkills();
+    }
+
+    fetchSkills();
+  }, [type, data]);
+
+  useEffect(() => {
+    if (type === "update" && projectSkills.length > 0) {
+      setValue("skills", [projectSkills[0], ...projectSkills.slice(1)]);
+    }
+  }, [projectSkills, type, setValue]);
+
+  const onSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    if (type === "update") {
+      try {
+        await updateProject(formData);
+        closeModal();
+      } catch (error) {
+        console.error("Failed to update project:", error);
+        alert("An error occurred. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    } else {
+      try {
+        await createProject(formData);
+        closeModal();
+      } catch (error) {
+        console.error("Failed to create/update project:", error);
+        alert("An error occurred. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
+
+  const skillsCheckboxes = useMemo(
+    () =>
+      skills.map((skill) => (
+        <label key={skill.id} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            value={skill.id}
+            {...register("skills")}
+            className="form-checkbox h-5 w-5 text-blue-600"
+          />
+          <span>{skill.name}</span>
+        </label>
+      )),
+    [skills, register]
+  );
 
   return (
     <form
@@ -60,23 +143,14 @@ const ProjectForm = ({
       </h2>
 
       <div>
-        <label className="block font-medium">Project ID</label>
+        <label htmlFor="name" className="block font-medium text-sm">
+          Project Name
+        </label>
         <input
-          {...register("projectID")}
-          className="w-full border p-2 rounded"
-          placeholder="Project ID"
-        />
-        {errors.projectID && (
-          <p className="text-red-500 text-sm">{errors.projectID.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block font-medium">Name</label>
-        <input
+          id="name"
           {...register("name")}
           className="w-full border p-2 rounded"
-          placeholder="Project Name"
+          placeholder="Project name"
         />
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -84,8 +158,26 @@ const ProjectForm = ({
       </div>
 
       <div>
-        <label className="block font-medium">Start Date</label>
+        <label htmlFor="description" className="block font-medium">
+          Description
+        </label>
         <input
+          id="description"
+          {...register("description")}
+          className="w-full border p-2 rounded"
+          placeholder="Project Description"
+        />
+        {errors.description && (
+          <p className="text-red-500 text-sm">{errors.description.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="startDate" className="block font-medium">
+          Start Date
+        </label>
+        <input
+          id="startDate"
           type="date"
           {...register("startDate")}
           className="w-full border p-2 rounded"
@@ -96,8 +188,11 @@ const ProjectForm = ({
       </div>
 
       <div>
-        <label className="block font-medium">End Date</label>
+        <label htmlFor="endDate" className="block font-medium">
+          End Date
+        </label>
         <input
+          id="endDate"
           type="date"
           {...register("endDate")}
           className="w-full border p-2 rounded"
@@ -108,31 +203,28 @@ const ProjectForm = ({
       </div>
 
       <div>
-        <label className="block font-medium">Status</label>
-        <input
+        <label htmlFor="status" className="block font-medium">
+          Status
+        </label>
+        <select
+          id="status"
           {...register("status")}
           className="w-full border p-2 rounded"
-          readOnly
-        />
+        >
+          <option value="new">New</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+        {errors.status && (
+          <p className="text-red-500 text-sm">{errors.status.message}</p>
+        )}
       </div>
 
       <div>
-        <label className="block font-medium">Skills</label>
-        <div className="flex flex-wrap gap-4">
-          {skills.map((skill) => (
-            <label key={skill} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                value={skill}
-                {...register("skill")}
-                className="form-checkbox h-5 w-5 text-blue-600"
-              />
-              <span>{skill}</span>
-            </label>
-          ))}
-        </div>
-        {errors.skill && (
-          <p className="text-red-500 text-sm">{errors.skill.message}</p>
+        <label className="block font-medium text-sm mb-2">Skills</label>
+        <div className="flex flex-wrap gap-4">{skillsCheckboxes}</div>
+        {errors.skills && (
+          <p className="text-red-500 text-sm">{errors.skills.message}</p>
         )}
       </div>
 
@@ -147,8 +239,13 @@ const ProjectForm = ({
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded"
+          disabled={isLoading}
         >
-          {type === "create" ? "create" : "update"}
+          {isLoading
+            ? "Processing..."
+            : type === "create"
+              ? "Create"
+              : "Update"}
         </button>
       </div>
     </form>

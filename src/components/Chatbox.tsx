@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import TextArea from "antd/lib/input/TextArea";
-import runChat from "../app/config/gemini";
+import runChat from "../app/config/gemini_v2";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 
@@ -13,6 +13,15 @@ const ChatBox: React.FC = () => {
   const [messages, setMessages] = useState<
     { content: string; sender: "user" | "bot"; timestamp: string }[]
   >([]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const onSent = async (prompt: string) => {
     if (!prompt.trim()) return;
@@ -86,7 +95,9 @@ const ChatBox: React.FC = () => {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`msg mb-3 ${message.sender === "user" ? "msg-right" : "msg-left"} flex items-start space-x-2 break-words`}
+              className={`msg mb-3 ${
+                message.sender === "user" ? "msg-right" : "msg-left"
+              } flex items-start space-x-2 break-words`}
             >
               {message.sender !== "user" && (
                 <img
@@ -115,6 +126,7 @@ const ChatBox: React.FC = () => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef}></div>
         </div>
         <div className="type-area mt-3 relative">
           <TextArea
