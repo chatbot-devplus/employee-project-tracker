@@ -11,6 +11,7 @@ async function getEmployeeInfo(userQuery) {
   try {
     const analysis = await extractEntityFromQuery(userQuery);
 
+
     if (
       !analysis ||
       analysis.intent !== "get_employee_info" ||

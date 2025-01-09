@@ -100,7 +100,7 @@ const ChatBox: React.FC = () => {
                   message.sender === "user"
                     ? "bg-green-100 text-green-800 ml-auto"
                     : "bg-blue-100 text-gray-700"
-                } p-3 rounded-lg w-72 whitespace-normal break-words `}
+                } p-3 rounded-lg w-56 whitespace-normal break-words `}
               >
                 <ReactMarkdown
                   rehypePlugins={[rehypeRaw]}
