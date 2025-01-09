@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"; // Import uuidv4 từ thư viện uuid
 
 const getAllProjects = async () => {
   try {
-    const { data, error } = await supabase.from("projects").select("*").order("createdAt", { ascending: false }).match({isDestroyed: false});
+    const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false }).match({is_destroyed: false});
     if (error) {
       throw error;
     }
@@ -27,8 +27,8 @@ const createProject = async (data: any) => {
         id: projectGeneratedId,
         name,
         description,
-        startDate: startDate,
-        endDate: endDate || null,
+        start_date: startDate,
+        end_date: endDate || null,
         status,
       })
       .select()
@@ -41,8 +41,8 @@ const createProject = async (data: any) => {
       const id = uuidv4();
       return {
         id,
-        projectId: project.id,
-        skillId: skillId,
+        project_id: project.id,
+        skill_id: skillId,
       };
     });
 
@@ -66,8 +66,8 @@ const updateProject = async (data: any) => {
       .update({
         name,
         description,
-        startDate,
-        endDate: endDate || null,
+        start_date: startDate,
+        end_date: endDate || null,
         status,
       })
       .eq("id", id);
@@ -78,7 +78,7 @@ const updateProject = async (data: any) => {
     const { error: deleteSkillsError } = await supabase
       .from("project_skills")
       .delete()
-      .eq("projectId", id);
+      .eq("projec_id", id);
 
     if (deleteSkillsError) throw deleteSkillsError;
 
@@ -87,8 +87,8 @@ const updateProject = async (data: any) => {
       const skillMappingId = uuidv4();
       return {
         id: skillMappingId,
-        projectId: id,
-        skillId: skillId,
+        project_id: id,
+        skill_id: skillId,
       };
     });
 
@@ -108,7 +108,7 @@ const deleteProject = async (id: string) => {
     await supabase
       .from("projects")
       .update({
-        isDestroyed: true
+        is_destroyed: true
       })
       .eq("id", id);
   } catch (error) {
