@@ -7,33 +7,31 @@ const getAllProjects = async (
   pageSize: number,
   query: string = "",
   startDate: string = "",
-  endDate: string = "",
+  endDate: string = ""
 ) => {
   try {
     let baseQuery = supabase
       .from("projects")
       .select("*", { count: "exact" })
       .eq("is_destroyed", false)
-      .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
 
     if (query) {
       baseQuery = baseQuery.ilike("name", `%${query}%`);
     }
 
     if (startDate && endDate) {
-      baseQuery = baseQuery
-        .gte("start_date", startDate)
-        .lte("start_date", endDate);
-    } else if (startDate) {
-      baseQuery = baseQuery.gte("start_date", startDate);
-    } else if (endDate) {
-      baseQuery = baseQuery.lte("start_date", endDate);
-    }
+      baseQuery = baseQuery.gte("start_date", startDate).lte("start_date", endDate);
+      } else if (startDate) {
+          baseQuery = baseQuery.gte("start_date", startDate);
+      }else if(endDate) {
+         baseQuery = baseQuery.lte("start_date", endDate);
+        }
 
-    const { data, error, count } = await baseQuery.range(
-      (page - 1) * pageSize,
-      page * pageSize - 1,
-    );
+
+
+    const { data, error, count } = await baseQuery
+        .range((page - 1) * pageSize, page * pageSize - 1);
 
     if (error) {
       throw error;
@@ -81,8 +79,10 @@ const createProject = async (data: any) => {
       .insert(projectSkills);
 
     if (skillsError) throw skillsError;
+    return project
   } catch (error) {
     console.error("Error creating project:", error.message);
+     return null
   }
 };
 
@@ -91,7 +91,7 @@ const updateProject = async (data: any) => {
 
   try {
     // Update the project details
-    const { error: projectError } = await supabase
+    const { data: project, error: projectError } = await supabase
       .from("projects")
       .update({
         name,
@@ -100,7 +100,9 @@ const updateProject = async (data: any) => {
         end_date: end_date || null,
         status,
       })
-      .eq("id", id);
+      .eq("id", id)
+       .select()
+      .single();
 
     if (projectError) throw projectError;
 
@@ -127,21 +129,30 @@ const updateProject = async (data: any) => {
       .insert(projectSkills);
 
     if (insertSkillsError) throw insertSkillsError;
+     return project;
   } catch (error) {
     console.error("Error updating project:", error.message);
+      return null;
   }
 };
 
 const deleteProject = async (id: string) => {
   try {
-    await supabase
+      const { data: project, error } = await supabase
       .from("projects")
       .update({
         is_destroyed: true,
       })
-      .eq("id", id);
+      .eq("id", id)
+        .select()
+      .single()
+      if(error) {
+          throw new Error("Error")
+      }
+      return project;
   } catch (error) {
     console.error("Error deleting project:", error.message);
+      return null;
   }
 };
 

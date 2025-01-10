@@ -22,7 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`px-2 rounded-sm ${page === currentPage ? "bg-lamaSky" : ""}`}
+          className={`px-2 rounded-sm ${page === currentPage ? "bg-lamaGreen" : ""}`}
         >
           {page}
         </button>
@@ -96,7 +96,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
-        className="py-2 px-4 mx-2 rounded-md bg-slate-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 mx-2 rounded-md bg-slate-200 text-xs font-semibold hover:bg-lamaGreenLight disabled:opacity-50 disabled:cursor-not-allowed "
       >
         Prev
       </button>
@@ -106,7 +106,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
-        className="py-2 px-4 mx-2 rounded-md bg-slate-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 mx-2 rounded-md bg-slate-200 text-xs font-semibold hover:bg-lamaGreenLight disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>
