@@ -14,13 +14,13 @@ const menuItems = [
         visible: ["admin", "employee", "project"],
       },
       {
-        icon: "/teacher.png",
+        icon: "/employees.png",
         label: "Employee",
         href: "/employees",
         visible: ["admin", "employee"],
       },
       {
-        icon: "/student.png",
+        icon: "/project.png",
         label: "Projects",
         href: "/projects",
         visible: ["admin", "projects"],

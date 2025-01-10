@@ -1,17 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
-import { v4 as uuidv4 } from "uuid"; // Import uuidv4 từ thư viện uuid
+import { v4 as uuidv4 } from "uuid";
 
-const getAllProjects = async () => {
+const getAllProjects = async (
+  page: number,
+  pageSize: number,
+  query: string = "",
+  startDate: string = "",
+  endDate: string = "",
+) => {
   try {
-    const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false }).match({is_destroyed: false});
+    let baseQuery = supabase
+      .from("projects")
+      .select("*", { count: "exact" })
+      .eq("is_destroyed", false)
+      .order("created_at", { ascending: false });
+
+    if (query) {
+      baseQuery = baseQuery.ilike("name", `%${query}%`);
+    }
+
+    if (startDate && endDate) {
+      baseQuery = baseQuery
+        .gte("start_date", startDate)
+        .lte("start_date", endDate);
+    } else if (startDate) {
+      baseQuery = baseQuery.gte("start_date", startDate);
+    } else if (endDate) {
+      baseQuery = baseQuery.lte("start_date", endDate);
+    }
+
+    const { data, error, count } = await baseQuery.range(
+      (page - 1) * pageSize,
+      page * pageSize - 1,
+    );
+
     if (error) {
       throw error;
     }
-    return data;
+    return { data, total: count ?? 0 };
   } catch (error) {
-    console.error("Error fetching employees:", error);
-    return [];
+    console.error("Error fetching projects:", error);
+    return { data: [], total: 0 };
   }
 };
 
@@ -78,7 +108,7 @@ const updateProject = async (data: any) => {
     const { error: deleteSkillsError } = await supabase
       .from("project_skills")
       .delete()
-      .eq("projec_id", id);
+      .eq("project_id", id);
 
     if (deleteSkillsError) throw deleteSkillsError;
 
@@ -102,13 +132,12 @@ const updateProject = async (data: any) => {
   }
 };
 
-
 const deleteProject = async (id: string) => {
   try {
     await supabase
       .from("projects")
       .update({
-        is_destroyed: true
+        is_destroyed: true,
       })
       .eq("id", id);
   } catch (error) {

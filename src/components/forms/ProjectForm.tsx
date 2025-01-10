@@ -29,7 +29,7 @@ const schema = z
     {
       path: ["end_date"],
       message: "End date must be after start date!",
-    }
+    },
   );
 
 type FormData = z.infer<typeof schema>;
@@ -130,7 +130,7 @@ const ProjectForm = ({
           <span>{skill.name}</span>
         </label>
       )),
-    [skills, register]
+    [skills, register],
   );
 
   return (
