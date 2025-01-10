@@ -10,7 +10,7 @@ const getAllEmployees = async (page: number, pageSize: number) => {
       .select(
         `
             *,
-            roles!employees_role_id_fkey (
+            roles (
               role_name
             )
           `,
@@ -18,7 +18,6 @@ const getAllEmployees = async (page: number, pageSize: number) => {
       )
       .eq("is_destroyed", false)
       .range((page - 1) * pageSize, page * pageSize - 1);
-
     if (error) {
       throw error;
     }
@@ -35,16 +34,16 @@ const getAllEmployees = async (page: number, pageSize: number) => {
   }
 };
 
-const getInforFromProject = async (id) => {
+const getInforFromProject = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("employee_projects")
       .select(
         `
-            *,
-            employees (*),  
-            projects (*)    
-          `,
+        *,
+        employees (*),  
+        projects (*)    
+      `,
       )
       .eq("employee_id", id);
 
@@ -62,7 +61,7 @@ const getInforFromProject = async (id) => {
 
 // Get id Employee
 
-const getIDEmployees = async (id) => {
+const getIDEmployees = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("employees")
@@ -89,17 +88,28 @@ const createEmployee = async (data: any) => {
           id: generatedId,
           name: data.name,
           email: data.email,
-          role_id: data.role, // Use role_id here
+          role_id: data.role,
           joining_date: data.joiningDate,
         },
       ])
-      .select("*"); // Select the inserted row to return it
+      .select(
+        `
+        *,
+        roles (
+          role_name
+        )
+      `,
+      )
+      .single();
 
     if (error) {
       throw new Error(error.message || "Unknown error");
     }
 
-    return insertedData ? insertedData[0] : null; // Return the inserted employee
+    return {
+      ...insertedData,
+      roles: insertedData.roles ? { name: insertedData.roles.role_name } : null,
+    };
   } catch (error: any) {
     console.error("Error inserting data:", error);
     throw new Error(
@@ -116,17 +126,28 @@ const updateEmployee = async (id: string, updatedData: any) => {
       .update({
         name: updatedData.name,
         email: updatedData.email,
-        role_id: updatedData.role, // Use role_id here
-        joining_date: updatedData.joining_date,
+        role_id: updatedData.role,
+        joining_date: updatedData.joiningDate,
       })
       .eq("id", id)
-      .select("*"); // Select the updated row to return it
+      .select(
+        `
+        *,
+        roles (
+          role_name
+        )
+      `,
+      )
+      .single();
 
     if (error) {
       throw new Error(error.message || "Unknown error");
     }
 
-    return data ? data[0] : null; // Return the updated employee
+    return {
+      ...data,
+      roles: data.roles ? { name: data.roles.role_name } : null,
+    };
   } catch (error: any) {
     console.error("Error updating employee:", error);
     throw new Error(
@@ -140,13 +161,24 @@ const deleteEmployee = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("employees")
-      .update({ is_destroyed: true }) // Update isDestroy to true
+      .update({ is_destroyed: true })
       .eq("id", id)
-      .select("*");
+      .select(
+        `
+        *,
+        roles (
+          role_name
+        )
+      `,
+      )
+      .single();
     if (error) {
       throw new Error(error.message || "Unknown error");
     }
-    return data ? data[0] : null;
+    return {
+      ...data,
+      roles: data.roles ? { name: data.roles.role_name } : null,
+    };
   } catch (error: any) {
     console.error("Error updating employee:", error);
     throw new Error(
@@ -154,22 +186,17 @@ const deleteEmployee = async (id: string) => {
     );
   }
 };
-
 // Search Employees
-const searchEmployees = async (
-  query: string,
-  page: number,
-  pageSize: number,
-) => {
+const searchEmployees = async (query: string, page: number, pageSize: number) => {
   try {
     const { data, error, count } = await supabase
       .from("employees")
       .select(
         `
-            *,
-            roles!employees_role_id_fkey (
-                role_name
-            )
+                *,
+                roles (
+                    role_name
+                )
             `,
         { count: "exact" },
       )
@@ -183,7 +210,7 @@ const searchEmployees = async (
     return {
       data: data.map((employee) => ({
         ...employee,
-        roles: employee.roles ? { name: employee.roles.role_name } : undefined,
+        roles: employee.roles ? { name: employee.roles.role_name } : null,
       })),
       total: count ?? 0,
     };
@@ -192,7 +219,6 @@ const searchEmployees = async (
     return { data: [], total: 0 };
   }
 };
-
 export {
   createEmployee,
   getAllEmployees,
