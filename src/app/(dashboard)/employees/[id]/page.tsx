@@ -101,8 +101,6 @@ const SingleEmployeePage = () => {
   
     try {
       setLoading(true);
-  
-      // Gọi API và kiểm tra dữ liệu trả về
       const dataEmployees = await getIDEmployees(id);
   
       if (!dataEmployees || !Array.isArray(dataEmployees)) {

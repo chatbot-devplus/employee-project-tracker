@@ -34,7 +34,7 @@ const getAllEmployees = async (page: number, pageSize: number) => {
   }
 };
 
-const getInforFromProject = async (id: string) => {
+const getInforFromProject = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employee_projects")
@@ -61,7 +61,7 @@ const getInforFromProject = async (id: string) => {
 
 // Get id Employee
 
-const getIDEmployees = async (id: string) => {
+const getIDEmployees = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employees")
