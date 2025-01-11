@@ -137,7 +137,6 @@ const SingleEmployeePage = () => {
       fetchIDEmployeesProject();
     }
   }, [id]);
-  console.log("àdfadsfz",)
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       <div className="w-full">
