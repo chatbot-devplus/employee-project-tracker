@@ -50,17 +50,23 @@ const getIDEmployees = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employees")
-      .select("*")
+      .select(`
+        *,
+        roles(*)
+      `)
       .eq("id", id);
+
     if (error) {
       throw error;
     }
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching employees:", error);
     return [];
   }
 };
+
 
 // Create Employee
 const createEmployee = async (data: any) => {
