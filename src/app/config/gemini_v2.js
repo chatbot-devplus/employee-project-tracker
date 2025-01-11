@@ -31,7 +31,7 @@ async function getOrUpdateCache() {
 
   const totalTokens = history.reduce(
     (sum, entry) => sum + entry.parts[0].text.length,
-    0
+    0,
   );
 
   if (totalTokens >= MIN_TOKEN_COUNT) {
@@ -92,7 +92,7 @@ async function runChat(prompt) {
           "Không thể thực hiện truy vấn SQL. Vui lòng kiểm tra lại.";
       }
     }
-  } 
+  }
 
   history.push(
     {
@@ -102,12 +102,11 @@ async function runChat(prompt) {
     {
       role: "model",
       parts: [{ text: finalResponse }],
-    }
+    },
   );
 
   return finalResponse;
 }
-
 
 export const executeQueryFromChat = async (query) => {
   const cleanedQuery = query.trim().replace(/;$/, "");

@@ -51,8 +51,7 @@ const FormModal = ({
         try {
           if (table === "employee") {
             await deleteEmployee(id);
-          }
-          else if(table==="project"){
+          } else if (table === "project") {
             await deleteProject(id);
           }
           closeModal();

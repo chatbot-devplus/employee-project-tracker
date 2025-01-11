@@ -12,8 +12,10 @@ type Employee = {
   id: string;
   name: string;
   email?: string;
-  role?: string;
-  joiningDate: string;
+  roles?: {
+    name: string;
+  };
+  joining_date: string;
 };
 
 const columns = [
@@ -51,31 +53,47 @@ const employeesListPage = ({ searchQuery }: Props) => {
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [localSearchQuery, setLocalSearchQuery] = useState("");
-  const [noResults, setNoResults] = useState(false); // State to track no results
+  const [noResults, setNoResults] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [totalItems, setTotalItems] = useState(0);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
-  const fetchEmployees = useCallback(async () => {
-    try {
-      setLoading(true);
-      setNoResults(false);
-      const dataEmployees = await getAllEmployees();
-      setEmployees(dataEmployees as Employee[]);
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch employees. Please try again later.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [messageApi, setLoading, setEmployees, setNoResults]);
-
-  const fetchSearchEmployees = useCallback(
-    async (query: string) => {
+  const fetchEmployees = useCallback(
+    async (page: number) => {
       try {
         setLoading(true);
         setNoResults(false);
-        const dataEmployees = await searchEmployees(query);
+        const { data: dataEmployees, total } = await getAllEmployees(
+          page,
+          itemsPerPage,
+        );
+        setTotalItems(total);
+        setEmployees(dataEmployees as Employee[]);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+        messageApi.open({
+          type: "error",
+          content: "Failed to fetch employees. Please try again later.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
+  );
+
+  const fetchSearchEmployees = useCallback(
+    async (query: string, page: number) => {
+      try {
+        setLoading(true);
+        setNoResults(false);
+        const { data: dataEmployees, total } = await searchEmployees(
+          query,
+          page,
+          itemsPerPage,
+        );
+        setTotalItems(total);
         if (dataEmployees && dataEmployees.length === 0) {
           setNoResults(true);
         }
@@ -90,33 +108,26 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setLoading(false);
       }
     },
-    [messageApi, setLoading, setEmployees, setNoResults],
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
   );
 
   useEffect(() => {
-    if (searchQuery) {
-      fetchSearchEmployees(searchQuery);
+    if (debouncedSearchQuery) {
+      fetchSearchEmployees(debouncedSearchQuery, 1);
     } else {
-      fetchEmployees();
+      fetchEmployees(1);
     }
-  }, [searchQuery, fetchEmployees, fetchSearchEmployees]);
+  }, [debouncedSearchQuery, fetchEmployees, fetchSearchEmployees]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSearchQuery(e.target.value);
-  };
+    const query = e.target.value;
+    setLocalSearchQuery(query);
 
-  const handleSearchSubmit = () => {
-    if (localSearchQuery) {
-      fetchSearchEmployees(localSearchQuery);
-    } else {
-      fetchEmployees();
-    }
-  };
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(query);
+    }, 500);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearchSubmit();
-    }
+    return () => clearTimeout(timer);
   };
 
   const handleEmployeeChange = useCallback(
@@ -163,8 +174,8 @@ const employeesListPage = ({ searchQuery }: Props) => {
           </div>
         </td>
         <td className="hidden md:table-cell">{item.email}</td>
-        <td className="hidden md:table-cell">{item.joiningDate}</td>
-        <td className="hidden md:table-cell">{item.role}</td>
+        <td className="hidden md:table-cell">{item.joining_date}</td>
+        <td className="hidden md:table-cell">{item.roles?.name}</td>
         <td>
           <div className="flex items-center gap-2">
             <Link href={`/employees/${item.id}`}>
@@ -200,8 +211,35 @@ const employeesListPage = ({ searchQuery }: Props) => {
         <div className="p-4 text-center text-gray-500">No employees found.</div>
       );
     }
-    return <Table columns={columns} renderRow={renderRow} data={employees} />;
+    return <Table renderRow={renderRow} data={employees} />;
   }, [employees, loading, noResults, renderRow]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    if (debouncedSearchQuery) {
+      fetchSearchEmployees(debouncedSearchQuery, newPage);
+    } else {
+      fetchEmployees(newPage);
+    }
+  };
+
+  const handleItemsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const newItemsPerPage = parseInt(e.target.value);
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+
+    if (debouncedSearchQuery) {
+      fetchSearchEmployees(debouncedSearchQuery, 1);
+    } else {
+      fetchEmployees(1);
+    }
+  };
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(totalItems / itemsPerPage);
+  }, [totalItems, itemsPerPage]);
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
@@ -211,6 +249,22 @@ const employeesListPage = ({ searchQuery }: Props) => {
         <h1 className="hidden md:block text-lg font-semibold">All employees</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           {/* <TableSearch /> */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
+              Items per page:
+            </label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="p-1 rounded-md text-xs border border-gray-300"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
           <div className="flex items-center gap-4 self-end">
             {/* SEARCH BAR */}
             <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
@@ -220,7 +274,6 @@ const employeesListPage = ({ searchQuery }: Props) => {
                 width={14}
                 height={14}
                 className="cursor-pointer"
-                onClick={handleSearchSubmit}
               />
               <input
                 type="text"
@@ -228,7 +281,6 @@ const employeesListPage = ({ searchQuery }: Props) => {
                 className="w-[200px] p-2 bg-transparent outline-none"
                 value={localSearchQuery}
                 onChange={handleSearchChange}
-                onKeyDown={handleKeyDown}
               />
             </div>
             <FormModal
@@ -240,9 +292,24 @@ const employeesListPage = ({ searchQuery }: Props) => {
         </div>
       </div>
       {/* LIST */}
-      {memoizedTable}
+      <table className="w-full table-auto text-left">
+        <thead className="text-gray-500 text-xs uppercase">
+          <tr>
+            {columns.map((column) => (
+              <th key={column.key} className={`py-4 ${column.className || ""}`}>
+                {column.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{memoizedTable}</tbody>
+      </table>
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
