@@ -25,6 +25,12 @@ const menuItems = [
         href: "/projects",
         visible: ["admin", "projects"],
       },
+      {
+        icon: "/parent.png",
+        label: "Roles",
+        href: "/roles",
+        visible: ["admin", "roles"],
+      },
     ],
   },
   {

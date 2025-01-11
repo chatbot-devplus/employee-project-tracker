@@ -7,6 +7,7 @@ import Image from "next/image";
 import { JSX, useState } from "react";
 import { deleteEmployee } from "../api/employee";
 import { deleteProject } from "../api/project";
+import { deleteRole } from "../api/roles";
 
 const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -14,12 +15,16 @@ const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const RoleForm = dynamic(() => import("./forms/RoleForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (type: "create" | "update", data: any) => JSX.Element;
 } = {
   employee: (type, data) => <EmployeeForm type={type} {...data} />,
-  project: (type, data) => <ProjectForm type={type} {...data} />, // Added ProjectForm handler
+  project: (type, data) => <ProjectForm type={type} {...data} />,
+  role: (type,data) => <RoleForm type={type} {...data} />, // Added ProjectForm handler
 };
 
 const FormModal = ({
@@ -29,7 +34,7 @@ const FormModal = ({
   id,
   onItemChange,
 }: {
-  table: "employee" | "project";
+  table: "employee" | "project" | "role";
   type: "create" | "update" | "delete";
   data?: any;
   id?: string;
@@ -53,6 +58,9 @@ const FormModal = ({
             await deleteEmployee(id);
           } else if (table === "project") {
             await deleteProject(id);
+          }
+          else if (table === "role"){
+            await deleteRole(id);
           }
           closeModal();
         } catch (error) {
