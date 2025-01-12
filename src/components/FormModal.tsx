@@ -8,6 +8,8 @@ import { JSX, useState } from "react";
 import { deleteEmployee } from "../api/employee";
 import { deleteProject } from "../api/project";
 import { deleteRole } from "../api/roles";
+import { deleteEmployeeProject } from "../api/manage";
+import { message } from "antd";
 
 const ProjectForm = dynamic(() => import("./forms/ProjectForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -18,13 +20,16 @@ const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
 const RoleForm = dynamic(() => import("./forms/RoleForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-
+const ManageForm = dynamic(() => import("./forms/ManageForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 const forms: {
   [key: string]: (type: "create" | "update", data: any) => JSX.Element;
 } = {
   employee: (type, data) => <EmployeeForm type={type} {...data} />,
   project: (type, data) => <ProjectForm type={type} {...data} />,
-  role: (type,data) => <RoleForm type={type} {...data} />, // Added ProjectForm handler
+  role: (type,data) => <RoleForm type={type} {...data} />,
+  manage: (type,data) => <ManageForm type={type} {...data} />, 
 };
 
 const FormModal = ({
@@ -34,7 +39,7 @@ const FormModal = ({
   id,
   onItemChange,
 }: {
-  table: "employee" | "project" | "role";
+  table: "employee" | "project" | "role" | "manage";
   type: "create" | "update" | "delete";
   data?: any;
   id?: string;
@@ -62,6 +67,10 @@ const FormModal = ({
           else if (table === "role"){
             await deleteRole(id);
           }
+          else if (table === "manage"){
+            await deleteEmployeeProject(id);
+          }
+          message.success("Deleted successfully!");
           closeModal();
         } catch (error) {
           console.log("Error deleting employee:", error);

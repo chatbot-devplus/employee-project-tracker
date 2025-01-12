@@ -1,7 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
-
+const getAllEmployee = async () => {
+  try {
+      const { data, error } = await supabase
+          .from("employees")
+          .select("*");
+      if (error) {
+          throw error;
+      }
+       return data;
+  } catch (error) {
+      console.error("Error fetching roles:", error);
+      return [];
+  }
+};
 // Get All Employees
 const getAllEmployees = async (page: number, pageSize: number) => {
   try {
@@ -233,4 +246,5 @@ export {
   searchEmployees,
   getIDEmployees,
   getInforFromProject,
+  getAllEmployee
 };

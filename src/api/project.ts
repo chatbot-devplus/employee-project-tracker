@@ -1,7 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
-
+const getAllProject = async () => {
+  try {
+      const { data, error } = await supabase
+          .from("projects")
+          .select("*");
+      if (error) {
+          throw error;
+      }
+       return data;
+  } catch (error) {
+      console.error("Error fetching roles:", error);
+      return [];
+  }
+};
 const getAllProjects = async (
   page: number,
   pageSize: number,
@@ -156,4 +169,4 @@ const deleteProject = async (id: string) => {
   }
 };
 
-export { createProject, getAllProjects, updateProject, deleteProject };
+export { createProject, getAllProject,getAllProjects, updateProject, deleteProject };
