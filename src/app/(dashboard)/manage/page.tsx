@@ -90,19 +90,35 @@ const EmployeeProjectComponent = () => {
     const handleEmployeeProjectChange = useCallback(
         (newEmployeeProject: EmployeeProject, action: "create" | "delete") => {
             if (action === "create") {
-                setEmployeeProject((prevRoles) => [...prevRoles, newEmployeeProject]);
+                setEmployeeProject((prevEmployeProject) => [...prevEmployeProject, newEmployeeProject]);
                 messageApi.open({
                     type: "success",
                     content: "Created successfully!",
                 });
             }
+            if (action === "delete") {
+                setEmployeeProject((prevEmployeProject) =>
+                    prevEmployeProject.filter((role) => role.id !== newEmployeeProject.id)
+                );
+                messageApi.open({
+                    type: "success",
+                    content: "Deleted successfully!",
+                });
+            }
         },
         [messageApi]
     );
-    const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setItemsPerPage(Number(e.target.value));
+    const handleItemsPerPageChange = (
+        e: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const newItemsPerPage = parseInt(e.target.value);
+        setItemsPerPage(newItemsPerPage);
         setCurrentPage(1);
     };
+
+    const totalPages = useMemo(() => {
+        return Math.ceil(totalItems / itemsPerPage);
+    }, [totalItems, itemsPerPage]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -144,15 +160,10 @@ const EmployeeProjectComponent = () => {
         [handleEmployeeProjectChange],
     );
 
-    const totalPages = useMemo(() => {
-        return Math.ceil(totalItems / itemsPerPage);
-    }, [totalItems, itemsPerPage]);
-
     useEffect(() => {
-        console.log('Fetching data for page:', currentPage);
         fetchEmployeeProject(currentPage);
-    }, [currentPage, fetchEmployeeProject]);
-    
+    }, [fetchEmployeeProject, currentPage]);
+
 
 
     const memoizedTable = useMemo(() => {
