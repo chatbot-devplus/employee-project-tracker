@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-import { getIDDetailProject } from "../../../../api/project";
+import { Table } from "antd";
+import type { TableProps } from "antd";
+import { getIDDetailProject } from "../../../api/project";
 
 type DetailProject = {
   id: string;
@@ -12,39 +12,37 @@ type DetailProject = {
   status: string;
   start_date: Date;
   end_date: Date;
-}
+};
 
-const columns: TableProps<DetailProject>['columns'] = [
+const columns: TableProps<DetailProject>["columns"] = [
   {
-    title: 'Project Name',
-    dataIndex: 'name',
-    key: 'projectName',
+    title: "Project Name",
+    dataIndex: "name",
+    key: "projectName",
   },
   {
-    title: 'Project Description',
-    dataIndex: 'description',
-    key: 'projectDescription',
+    title: "Project Description",
+    dataIndex: "description",
+    key: "projectDescription",
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status',
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
   },
   {
-    title: 'Project Start Date',
-    dataIndex: 'start_date',
-    key: 'projectEndDate',
+    title: "Project Start Date",
+    dataIndex: "start_date",
+    key: "projectEndDate",
   },
   {
-    title: 'Project End Date',
-    dataIndex: 'end_date',
-    key: 'projectStartDate',
+    title: "Project End Date",
+    dataIndex: "end_date",
+    key: "projectStartDate",
   },
 ];
 const DetailProjectPage = () => {
-  const [projects, setProjects] = useState<DetailProject[]>(
-    [],
-  );
+  const [projects, setProjects] = useState<DetailProject[]>([]);
   const [loading, setLoading] = useState(false);
   const params = useParams();
   const id = params?.id;
@@ -86,8 +84,8 @@ const DetailProjectPage = () => {
           />
         ) : (
           <h2 className="text-2xl font-bold uppercase text-gray-800 border-b-2 border-blue-500 pb-2 mb-5">
-          Details Project
-        </h2>
+            Details Project
+          </h2>
         )}
       </div>
     </div>

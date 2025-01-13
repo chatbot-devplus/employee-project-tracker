@@ -33,9 +33,9 @@ const forms: {
 } = {
   employee: (type, data) => <EmployeeForm type={type} {...data} />,
   project: (type, data) => <ProjectForm type={type} {...data} />,
-  role: (type,data) => <RoleForm type={type} {...data} />,
-  manage: (type,data) => <ManageForm type={type} {...data} />, 
-  skill: (type,data) => <SkillForm type={type} {...data} />, 
+  role: (type, data) => <RoleForm type={type} {...data} />,
+  manage: (type, data) => <ManageForm type={type} {...data} />,
+  skill: (type, data) => <SkillForm type={type} {...data} />,
 };
 
 const FormModal = ({
@@ -69,14 +69,11 @@ const FormModal = ({
             await deleteEmployee(id);
           } else if (table === "project") {
             await deleteProject(id);
-          }
-          else if (table === "role"){
+          } else if (table === "role") {
             await deleteRole(id);
-          }
-          else if (table === "manage"){
+          } else if (table === "manage") {
             await deleteEmployeeProject(id);
-          }
-          else if (table === "skill"){
+          } else if (table === "skill") {
             await deleteSkill(id);
           }
           message.success("Deleted successfully!");

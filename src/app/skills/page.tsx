@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { getAllRole } from "../../../api/roles";
-import {  message } from "antd";
-import Pagination from "../../../components/Pagination";
-import FormModal from "../../../components/FormModal";
+import { getAllRole } from "../../api/roles";
+import { message } from "antd";
+import Pagination from "../../components/Pagination";
+import FormModal from "../../components/FormModal";
+import { getSkills } from "../../api/skills";
 
-type Role = {
+type Skill = {
   id: string;
-  role_name: string;
+  name: string;
 };
 
 const columns = [
@@ -21,23 +22,23 @@ const columns = [
   },
 ];
 
-const RolesComponent = () => {
-  const [roles, setRoles] = useState<Role[]>([]);
+const SkillComponent = () => {
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const fetchRoles = useCallback(
+  const fetchSkills = useCallback(
     async (page: number) => {
       try {
         setLoading(true);
 
-        const { data: dataRoles, total } = await getAllRole(page, itemsPerPage);
+        const { data: dataRoles, total } = await getSkills(page, itemsPerPage);
 
         setTotalItems(total);
-        setRoles(dataRoles as Role[]);
+        setSkills(dataRoles as Skill[]);
       } catch (error) {
         console.error("Error fetching roles: ", error);
         messageApi.open({
@@ -48,64 +49,61 @@ const RolesComponent = () => {
         setLoading(false);
       }
     },
-    [itemsPerPage, messageApi]
+    [itemsPerPage, messageApi],
   );
-
-  const handleRoleChange = useCallback(
-    (newRoles: Role, action: "create" | "update" | "delete") => {
+  const handleSkillChange = useCallback(
+    (newSkills: Skill, action: "create" | "update" | "delete") => {
       if (action === "create") {
-        setRoles((prevRoles) => [...prevRoles, newRoles]);
+        setSkills((prevSkills) => [...prevSkills, newSkills]);
         messageApi.open({
           type: "success",
-          content: "Role created successfully!",
+          content: "Skills created successfully!",
         });
       }
       if (action === "update") {
-        setRoles((prevRoles) =>
-          prevRoles.map((role) =>
-            role.id === newRoles.id ? newRoles : role
-          )
+        setSkills((prevSkills) =>
+          prevSkills.map((role) =>
+            role.id === newSkills.id ? newSkills : role,
+          ),
         );
         messageApi.open({
           type: "success",
-          content: "Role updated successfully!",
+          content: "Skills updated successfully!",
         });
       }
       if (action === "delete") {
-        setRoles((prevRoles) =>
-          prevRoles.filter((role) => role.id !== newRoles.id)
+        setSkills((prevSkills) =>
+          prevSkills.filter((role) => role.id !== newSkills.id),
         );
         messageApi.open({
           type: "success",
-          content: "Role deleted successfully!",
+          content: "Skills deleted successfully!",
         });
       }
     },
-    [messageApi]
+    [messageApi],
   );
-
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleItemsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   useEffect(() => {
-    fetchRoles(currentPage);
-  }, [fetchRoles, currentPage]);
-
+    fetchSkills(currentPage);
+  }, [fetchSkills, currentPage]);
   return (
     <>
       <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
         {contextHolder}
         {/* TOP */}
         <div className="flex items-center justify-between">
-          <h1 className="hidden md:block text-lg font-semibold">All Roles</h1>
+          <h1 className="hidden md:block text-lg font-semibold">All Skills</h1>
           <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
             <div className="flex items-center gap-2">
               <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
@@ -124,12 +122,12 @@ const RolesComponent = () => {
               </select>
             </div>
             <div className="flex items-center gap-4 self-end">
-            <FormModal
-              table="role"
-              type="create"
-              onItemChange={handleRoleChange}
-            />
-          </div>
+              <FormModal
+                table="skill"
+                type="create"
+                onItemChange={handleSkillChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -144,29 +142,29 @@ const RolesComponent = () => {
             </tr>
           </thead>
           <tbody>
-            {roles.map((item) => (
+            {skills.map((item) => (
               <tr
                 key={item.id}
                 className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
               >
                 <td className="flex items-center gap-4 p-4">
                   <div className="flex flex-col">
-                    <h3 className="font-semibold">{item.role_name}</h3>
+                    <h3 className="font-semibold">{item.name}</h3>
                   </div>
                 </td>
                 <td>
                   <div className="flex items-center gap-2">
                     <FormModal
-                      table="role"
+                      table="skill"
                       type="update"
                       data={item}
-                      onItemChange={handleRoleChange}
+                      onItemChange={handleSkillChange}
                     />
                     <FormModal
-                      table="role"
+                      table="skill"
                       type="delete"
                       id={item.id}
-                      onItemChange={handleRoleChange}
+                      onItemChange={handleSkillChange}
                     />
                   </div>
                 </td>
@@ -184,4 +182,4 @@ const RolesComponent = () => {
   );
 };
 
-export default RolesComponent;
+export default SkillComponent;
