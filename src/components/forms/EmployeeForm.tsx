@@ -44,7 +44,7 @@ const EmployeeForm = ({
             name: data?.name || "",
             email: data?.email || "",
             role: data?.role || "",
-            joiningDate: data?.joiningDate || "",
+            joiningDate: data?.joining_date || "",
         },
     });
   const [roles, setRoles] = useState<{id: string; role_name: string}[]>([]);

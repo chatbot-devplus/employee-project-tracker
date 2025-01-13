@@ -144,7 +144,7 @@ const SingleEmployeePage = () => {
           <div className="bg-lamaGreenLight py-6 px-4 rounded-md flex-1 flex gap-4  ">
             <div className="w-1/3">
               <Image
-                src="https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3408.jpg"
                 alt="Employee"
                 width={144}
                 height={144}
@@ -198,7 +198,6 @@ const SingleEmployeePage = () => {
                           No role assigned
                         </span>
                       )}
-
                     </div>
                   </div>
                 </div>
@@ -217,7 +216,7 @@ const SingleEmployeePage = () => {
               columns={columns}
               dataSource={employee_project}
               rowKey="id"
-              pagination={{ pageSize: 3, position: ['bottomCenter'], }}
+              pagination={{ pageSize: 3, position: ["bottomCenter"] }}
             />
           ) : (
             <p className="bg-gradient-to-r from-lime-400 to-lime-900 text-white font-bold text-center p-4 rounded-lg shadow-md">
@@ -225,9 +224,6 @@ const SingleEmployeePage = () => {
             </p>
           )}
         </div>
-
-
-
       </div>
     </div>
   );
