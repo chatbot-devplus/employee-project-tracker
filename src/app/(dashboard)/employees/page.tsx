@@ -18,14 +18,22 @@ type Employee = {
   joining_date: string;
   employee_skills: {
     skill_id: string;
-    
-  }
+    skills: {
+      name: string;
+    };
+  }[];
 };
 
 const columns = [
   {
+    label: "STT",
+    key: "stt",
+    className: "hidden md:table-cell p-4",
+  },
+  {
     label: "Name",
     key: "info",
+    className: "hidden md:table-cell p-4",
   },
   {
     label: "Email",
@@ -40,6 +48,11 @@ const columns = [
   {
     label: "Role",
     key: "role",
+    className: "hidden lg:table-cell",
+  },
+  {
+    label: "Skills",
+    key: "skills",
     className: "hidden lg:table-cell",
   },
   {
@@ -70,7 +83,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setNoResults(false);
         const { data: dataEmployees, total } = await getAllEmployees(
           page,
-          itemsPerPage,
+          itemsPerPage
         );
         setTotalItems(total);
         setEmployees(dataEmployees as Employee[]);
@@ -84,7 +97,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setLoading(false);
       }
     },
-    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage]
   );
 
   const fetchSearchEmployees = useCallback(
@@ -95,7 +108,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         const { data: dataEmployees, total } = await searchEmployees(
           query,
           page,
-          itemsPerPage,
+          itemsPerPage
         );
         setTotalItems(total);
         if (dataEmployees && dataEmployees.length === 0) {
@@ -112,7 +125,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setLoading(false);
       }
     },
-    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage]
   );
 
   useEffect(() => {
@@ -146,8 +159,8 @@ const employeesListPage = ({ searchQuery }: Props) => {
       if (action === "update") {
         setEmployees((prevEmployees) =>
           prevEmployees.map((employee) =>
-            employee.id === newEmployee.id ? newEmployee : employee,
-          ),
+            employee.id === newEmployee.id ? newEmployee : employee
+          )
         );
         messageApi.open({
           type: "success",
@@ -156,7 +169,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
       }
       if (action === "delete") {
         setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== newEmployee.id),
+          prevEmployees.filter((employee) => employee.id !== newEmployee.id)
         );
         messageApi.open({
           type: "success",
@@ -164,46 +177,63 @@ const employeesListPage = ({ searchQuery }: Props) => {
         });
       }
     },
-    [messageApi],
+    [messageApi]
   );
   const renderRow = useCallback(
-    (item: Employee) => (
-      <tr
-        key={item.id}
-        className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      >
-        <td className="flex items-center gap-4 p-4">
-          <div className="flex flex-col">
-            <h3 className="font-semibold">{item.name}</h3>
-          </div>
-        </td>
-        <td className="hidden md:table-cell">{item.email}</td>
-        <td className="hidden md:table-cell">{item.joining_date}</td>
-        <td className="hidden md:table-cell">{item.roles?.name}</td>
-        <td>
-          <div className="flex items-center gap-2">
-            <Link href={`/employees/${item.id}`}>
-              <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-                <Image src="/view.png" alt="" width={16} height={16} />
-              </button>
-            </Link>
-            <FormModal
-              table="employee"
-              type="update"
-              data={item}
-              onItemChange={handleEmployeeChange}
-            />
-            <FormModal
-              table="employee"
-              type="delete"
-              id={item.id}
-              onItemChange={handleEmployeeChange}
-            />
-          </div>
-        </td>
-      </tr>
-    ),
-    [handleEmployeeChange],
+    (item: Employee, index: number) => {
+      const stt = (currentPage - 1) * itemsPerPage + index + 1;
+      return (
+        <tr
+          key={item.id}
+          className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+        >
+          <td className="hidden md:table-cell p-4">{stt}</td>
+          <td className="flex items-center gap-4 p-4">
+            <div className="flex flex-col">
+              <h3 className="font-semibold">{item.name}</h3>
+            </div>
+          </td>
+          <td className="hidden md:table-cell">{item.email}</td>
+          <td className="hidden md:table-cell">{item.joining_date}</td>
+          <td className="hidden md:table-cell">{item.roles?.name}</td>
+          <td className="hidden md:table-cell">{item.employee_skills && item.employee_skills.length > 0 ? (
+            <span className="text-gray-500 text-sm">
+              {" "}
+              {item.employee_skills
+                .map((skill) => skill.skills?.name)
+                .filter((name) => name)
+                .join(", ")}
+            </span>
+          ) : (
+            <span className="text-gray-500 text-sm">
+              No skills assigned
+            </span>
+          )}</td>
+          <td>
+            <div className="flex items-center gap-2">
+              <Link href={`/employees/${item.id}`}>
+                <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+                  <Image src="/view.png" alt="" width={16} height={16} />
+                </button>
+              </Link>
+              <FormModal
+                table="employee"
+                type="update"
+                data={item}
+                onItemChange={handleEmployeeChange}
+              />
+              <FormModal
+                table="employee"
+                type="delete"
+                id={item.id}
+                onItemChange={handleEmployeeChange}
+              />
+            </div>
+          </td>
+        </tr>
+      );
+    },
+    [currentPage, itemsPerPage, handleEmployeeChange]
   );
 
   const memoizedTable = useMemo(() => {
@@ -215,7 +245,12 @@ const employeesListPage = ({ searchQuery }: Props) => {
         <div className="p-4 text-center text-gray-500">No employees found.</div>
       );
     }
-    return <Table renderRow={renderRow} data={employees} />;
+    return (
+      <Table
+        renderRow={(item) => renderRow(item, employees.indexOf(item))}
+        data={employees}
+      />
+    );
   }, [employees, loading, noResults, renderRow]);
 
   const handlePageChange = (newPage: number) => {
@@ -228,7 +263,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
   };
 
   const handleItemsPerPageChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newItemsPerPage = parseInt(e.target.value);
     setItemsPerPage(newItemsPerPage);
