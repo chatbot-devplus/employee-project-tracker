@@ -1,11 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { getIDEmployees, getInforFromProject } from "../../../../api/employee";
+import { getIDEmployees, getInforFromProject } from "../../../api/employee";
 import { useParams } from "next/navigation";
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-
+import { Table } from "antd";
+import type { TableProps } from "antd";
 
 type Employee = {
   id: string;
@@ -25,7 +24,6 @@ type Employee = {
   }[];
 };
 
-
 type EmployeeProject = {
   id: string;
   joining_date: string;
@@ -44,51 +42,53 @@ type EmployeeProject = {
   };
 };
 
+const columns: TableProps<EmployeeProject>["columns"] = [
+  {
+    title: "Project Name",
+    dataIndex: ["projects", "name"],
+    key: "projectName",
+  },
+  {
+    title: "Role",
+    dataIndex: "role",
+    key: "role",
+  },
+  {
+    title: "Project Description",
+    dataIndex: ["projects", "description"],
+    key: "projectDescription",
+  },
+  {
+    title: "Project Start Date",
+    dataIndex: ["projects", "start_date"],
+    key: "projectEndDate",
+  },
+  {
+    title: "Project End Date",
+    dataIndex: ["projects", "end_date"],
+    key: "projectStartDate",
+  },
+  {
+    title: "Employee Joining Date",
+    dataIndex: "joining_date",
+    key: "employeeJoiningDate",
+  },
 
-const columns: TableProps<EmployeeProject>['columns'] = [
   {
-    title: 'Project Name',
-    dataIndex: ['projects', 'name'],
-    key: 'projectName',
-  },
-  {
-    title: 'Role',
-    dataIndex: 'role',
-    key: 'role',
-  },
-  {
-    title: 'Project Description',
-    dataIndex: ['projects', 'description'],
-    key: 'projectDescription',
-  },
-  {
-    title: 'Project Start Date',
-    dataIndex: ['projects', 'start_date'],
-    key: 'projectEndDate',
-  },
-  {
-    title: 'Project End Date',
-    dataIndex: ['projects', 'end_date'],
-    key: 'projectStartDate',
-  },
-  {
-    title: 'Employee Joining Date',
-    dataIndex: 'joining_date',
-    key: 'employeeJoiningDate',
-  },
-
-  {
-    title: 'Status',
-    key: 'status',
+    title: "Status",
+    key: "status",
     render: (_, record) => (
       <button
-        className={`px-4 py-2 text-white rounded ${record.outing_date ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
-          }`}
+        className={`px-4 py-2 text-white rounded ${
+          record.outing_date
+            ? "bg-red-500 hover:bg-red-600"
+            : "bg-green-500 hover:bg-green-600"
+        }`}
       >
-        {record.outing_date ? 'Leave' : 'Not yet'}
+        {record.outing_date ? "Leave" : "Not yet"}
       </button>
     ),
-  }
+  },
 ];
 
 const SingleEmployeePage = () => {
@@ -122,7 +122,6 @@ const SingleEmployeePage = () => {
       setLoading(false);
     }
   };
-
 
   const fetchIDEmployeesProject = async () => {
     try {
@@ -213,13 +212,14 @@ const SingleEmployeePage = () => {
                         width={14}
                         height={14}
                       />
-                      {employee.employee_skills && employee.employee_skills.length > 0 ? (
+                      {employee.employee_skills &&
+                      employee.employee_skills.length > 0 ? (
                         <span className="text-gray-500 text-sm">
                           Skills:{" "}
                           {employee.employee_skills
-                            .map((skill) => skill.skills?.name) 
-                            .filter((name) => name) 
-                            .join(", ")} 
+                            .map((skill) => skill.skills?.name)
+                            .filter((name) => name)
+                            .join(", ")}
                         </span>
                       ) : (
                         <span className="text-gray-500 text-sm">

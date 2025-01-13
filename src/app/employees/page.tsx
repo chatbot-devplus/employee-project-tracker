@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Table from "../../../components/Table";
-import Pagination from "../../../components/Pagination";
-import FormModal from "../../../components/FormModal";
+import Table from "../../components/Table";
+import Pagination from "../../components/Pagination";
+import FormModal from "../../components/FormModal";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { getAllEmployees, searchEmployees } from "../../../api/employee";
+import { getAllEmployees, searchEmployees } from "../../api/employee";
 import { Spin, message } from "antd";
 
 type Employee = {
@@ -83,7 +83,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setNoResults(false);
         const { data: dataEmployees, total } = await getAllEmployees(
           page,
-          itemsPerPage
+          itemsPerPage,
         );
         setTotalItems(total);
         setEmployees(dataEmployees as Employee[]);
@@ -97,7 +97,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setLoading(false);
       }
     },
-    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage]
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
   );
 
   const fetchSearchEmployees = useCallback(
@@ -108,7 +108,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         const { data: dataEmployees, total } = await searchEmployees(
           query,
           page,
-          itemsPerPage
+          itemsPerPage,
         );
         setTotalItems(total);
         if (dataEmployees && dataEmployees.length === 0) {
@@ -125,7 +125,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         setLoading(false);
       }
     },
-    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage]
+    [messageApi, setLoading, setEmployees, setNoResults, itemsPerPage],
   );
 
   useEffect(() => {
@@ -159,8 +159,8 @@ const employeesListPage = ({ searchQuery }: Props) => {
       if (action === "update") {
         setEmployees((prevEmployees) =>
           prevEmployees.map((employee) =>
-            employee.id === newEmployee.id ? newEmployee : employee
-          )
+            employee.id === newEmployee.id ? newEmployee : employee,
+          ),
         );
         messageApi.open({
           type: "success",
@@ -169,7 +169,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
       }
       if (action === "delete") {
         setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== newEmployee.id)
+          prevEmployees.filter((employee) => employee.id !== newEmployee.id),
         );
         messageApi.open({
           type: "success",
@@ -177,7 +177,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         });
       }
     },
-    [messageApi]
+    [messageApi],
   );
   const renderRow = useCallback(
     (item: Employee, index: number) => {
@@ -196,19 +196,19 @@ const employeesListPage = ({ searchQuery }: Props) => {
           <td className="hidden md:table-cell">{item.email}</td>
           <td className="hidden md:table-cell">{item.joining_date}</td>
           <td className="hidden md:table-cell">{item.roles?.name}</td>
-          <td className="hidden md:table-cell">{item.employee_skills && item.employee_skills.length > 0 ? (
-            <span className="text-gray-500 text-sm">
-              {" "}
-              {item.employee_skills
-                .map((skill) => skill.skills?.name)
-                .filter((name) => name)
-                .join(", ")}
-            </span>
-          ) : (
-            <span className="text-gray-500 text-sm">
-              No skills assigned
-            </span>
-          )}</td>
+          <td className="hidden md:table-cell">
+            {item.employee_skills && item.employee_skills.length > 0 ? (
+              <span className="text-gray-500 text-sm">
+                {" "}
+                {item.employee_skills
+                  .map((skill) => skill.skills?.name)
+                  .filter((name) => name)
+                  .join(", ")}
+              </span>
+            ) : (
+              <span className="text-gray-500 text-sm">No skills assigned</span>
+            )}
+          </td>
           <td>
             <div className="flex items-center gap-2">
               <Link href={`/employees/${item.id}`}>
@@ -233,7 +233,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
         </tr>
       );
     },
-    [currentPage, itemsPerPage, handleEmployeeChange]
+    [currentPage, itemsPerPage, handleEmployeeChange],
   );
 
   const memoizedTable = useMemo(() => {
@@ -263,7 +263,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
   };
 
   const handleItemsPerPageChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const newItemsPerPage = parseInt(e.target.value);
     setItemsPerPage(newItemsPerPage);

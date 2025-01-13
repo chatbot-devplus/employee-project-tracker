@@ -3,16 +3,14 @@ import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
 const getAllEmployee = async () => {
   try {
-      const { data, error } = await supabase
-          .from("employees")
-          .select("*");
-      if (error) {
-          throw error;
-      }
-       return data;
+    const { data, error } = await supabase.from("employees").select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
   } catch (error) {
-      console.error("Error fetching roles:", error);
-      return [];
+    console.error("Error fetching roles:", error);
+    return [];
   }
 };
 // Get All Employees
@@ -80,14 +78,16 @@ const getIDEmployees = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employees")
-      .select(`
+      .select(
+        `
         *,
         roles(*),
          employee_skills(
           *,
           skills(name)
         )
-      `)
+      `,
+      )
       .eq("id", id);
 
     if (error) {
@@ -100,7 +100,6 @@ const getIDEmployees = async (id) => {
     return [];
   }
 };
-
 
 // Create Employee
 const createEmployee = async (data: any) => {
@@ -212,7 +211,11 @@ const deleteEmployee = async (id: string) => {
   }
 };
 // Search Employees
-const searchEmployees = async (query: string, page: number, pageSize: number) => {
+const searchEmployees = async (
+  query: string,
+  page: number,
+  pageSize: number,
+) => {
   try {
     const { data, error, count } = await supabase
       .from("employees")
@@ -252,5 +255,5 @@ export {
   searchEmployees,
   getIDEmployees,
   getInforFromProject,
-  getAllEmployee
+  getAllEmployee,
 };

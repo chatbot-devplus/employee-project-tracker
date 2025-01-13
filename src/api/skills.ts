@@ -12,7 +12,7 @@ const getSkills = async (page: number, pageSize: number) => {
   try {
     const { data, error, count } = await supabase
       .from("skills")
-      .select( "*",{ count: "exact" },)
+      .select("*", { count: "exact" })
       .range((page - 1) * pageSize, page * pageSize - 1);
     if (error) {
       throw error;
@@ -30,7 +30,6 @@ const getSkills = async (page: number, pageSize: number) => {
   }
 };
 
-
 const getSkillsByProjectId = async (projectId: string) => {
   const { data, error } = await supabase
     .from("project_skills")
@@ -44,70 +43,80 @@ const getSkillsByProjectId = async (projectId: string) => {
 
 const createSkills = async (data: any) => {
   try {
-      const generatedId = uuidv4();
-      const { data: insertedData, error } = await supabase
-        .from("skills")
-        .insert([
-          {
-            id: generatedId,
-            name: data.name, 
-          },
-        ])
-        .select("*")
-        .single(); 
-      if (error) {
-        throw new Error(error.message || "Unknown error");
-      }
-      return {
-        ...insertedData,
-        roles: insertedData?.name ? { name: insertedData.name } : null,
-      };
-    } catch (error: any) {
-      console.error("Error inserting data:", error);
-      throw new Error(
-        error.message || "An error occurred while creating the role."
-      );
+    const generatedId = uuidv4();
+    const { data: insertedData, error } = await supabase
+      .from("skills")
+      .insert([
+        {
+          id: generatedId,
+          name: data.name,
+        },
+      ])
+      .select("*")
+      .single();
+    if (error) {
+      throw new Error(error.message || "Unknown error");
     }
-}
+    return {
+      ...insertedData,
+      roles: insertedData?.name ? { name: insertedData.name } : null,
+    };
+  } catch (error: any) {
+    console.error("Error inserting data:", error);
+    throw new Error(
+      error.message || "An error occurred while creating the role.",
+    );
+  }
+};
 
 const updateSkills = async (id: number, formData: any) => {
-  const { name } = formData; 
+  const { name } = formData;
   try {
     const { data: updatedSkills, error } = await supabase
       .from("skills")
       .update({ name })
-      .eq("id", id) 
+      .eq("id", id)
       .select("*")
-      .single(); 
+      .single();
     if (error) {
-      throw new Error(error.message || "An error occurred while updating the role.");
+      throw new Error(
+        error.message || "An error occurred while updating the role.",
+      );
     }
     return updatedSkills;
   } catch (error: any) {
     console.error("Error updating role:", error);
-    throw new Error(error.message || "Failed to update the role. Please try again.");
+    throw new Error(
+      error.message || "Failed to update the role. Please try again.",
+    );
   }
 };
 
 const deleteSkill = async (id: string) => {
   try {
-      const { data: skills, error } = await supabase
+    const { data: skills, error } = await supabase
       .from("skills")
       .update({
         is_destroyed: true,
       })
       .eq("id", id)
-        .select()
-      .single()
-      if(error) {
-          throw new Error("Error")
-      }
-      return skills;
+      .select()
+      .single();
+    if (error) {
+      throw new Error("Error");
+    }
+    return skills;
   } catch (error) {
     console.error("Error deleting role:", error.message);
-      return null;
+    return null;
   }
 };
 
-
-export { getAllSkills, getSkillsByProjectId, getSkills,createSkills,updateSkills,deleteSkill };
+export {
+  getAllSkills,
+  getSkillsByProjectId,
+  getSkills,
+  createSkills,
+  updateSkills,
+  deleteSkill,
+};
