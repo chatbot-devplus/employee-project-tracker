@@ -32,6 +32,12 @@ const menuItems = [
         visible: ["admin", "roles"],
       },
       {
+        icon: "/class.png",
+        label: "Skills",
+        href: "/skills",
+        visible: ["admin", "skills"],
+      },
+      {
         icon: "/more.png",
         label: "Manage",
         href: "/manage",
