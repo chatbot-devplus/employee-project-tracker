@@ -16,6 +16,10 @@ type Employee = {
     name: string;
   };
   joining_date: string;
+  employee_skills: {
+    skill_id: string;
+    
+  }
 };
 
 const columns = [

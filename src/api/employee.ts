@@ -72,8 +72,6 @@ const getInforFromProject = async (id) => {
   }
 };
 
-// Get id Employee
-
 const getIDEmployees = async (id) => {
   try {
     const { data, error } = await supabase

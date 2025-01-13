@@ -220,14 +220,11 @@ const SingleEmployeePage = () => {
               pagination={{ pageSize: 3, position: ['bottomCenter'], }}
             />
           ) : (
-            <p className="bg-gradient-to-r from-lime-400 to-lime-900 text-white font-bold text-center p-4 rounded-lg shadow-md">
-              Nhân viên này chưa tham gia dự án nào
-            </p>
+            <h2 className="text-2xl font-bold uppercase text-gray-800 border-b-2 border-blue-500 pb-2 mb-5">
+          This employee has not participated in any projects
+        </h2>
           )}
         </div>
-
-
-
       </div>
     </div>
   );

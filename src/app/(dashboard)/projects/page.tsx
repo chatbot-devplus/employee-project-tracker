@@ -21,11 +21,6 @@ export type project = {
 
 const columns = [
   {
-    label: "project ID",
-    key: "projectID",
-    className: "hidden md:table-cell p-4",
-  },
-  {
     label: "Project name",
     key: "name",
     className: "hidden lg:table-cell",
@@ -137,9 +132,7 @@ const projectsListPage = () => {
         key={item.id}
         className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
       >
-        <td className="hidden md:table-cell flex items-center p-4">
-          {item.id}
-        </td>
+
         <td className="hidden md:table-cell">{item.name}</td>
         <td className="hidden md:table-cell">{item.status}</td>
         <td className="hidden md:table-cell">{item.start_date}</td>
@@ -308,7 +301,6 @@ const projectsListPage = () => {
           {memoizedTable}
         </tbody>
       </table>
-      {/* PAGINATION */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

@@ -3,16 +3,16 @@ import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
 const getAllProject = async () => {
   try {
-      const { data, error } = await supabase
-          .from("projects")
-          .select("*");
-      if (error) {
-          throw error;
-      }
-       return data;
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
   } catch (error) {
-      console.error("Error fetching roles:", error);
-      return [];
+    console.error("Error fetching roles:", error);
+    return [];
   }
 };
 const getAllProjects = async (
@@ -27,7 +27,7 @@ const getAllProjects = async (
       .from("projects")
       .select("*", { count: "exact" })
       .eq("is_destroyed", false)
-        .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false })
 
     if (query) {
       baseQuery = baseQuery.ilike("name", `%${query}%`);
@@ -35,16 +35,16 @@ const getAllProjects = async (
 
     if (startDate && endDate) {
       baseQuery = baseQuery.gte("start_date", startDate).lte("start_date", endDate);
-      } else if (startDate) {
-          baseQuery = baseQuery.gte("start_date", startDate);
-      }else if(endDate) {
-         baseQuery = baseQuery.lte("start_date", endDate);
-        }
+    } else if (startDate) {
+      baseQuery = baseQuery.gte("start_date", startDate);
+    } else if (endDate) {
+      baseQuery = baseQuery.lte("start_date", endDate);
+    }
 
 
 
     const { data, error, count } = await baseQuery
-        .range((page - 1) * pageSize, page * pageSize - 1);
+      .range((page - 1) * pageSize, page * pageSize - 1);
 
     if (error) {
       throw error;
@@ -95,7 +95,7 @@ const createProject = async (data: any) => {
     return project
   } catch (error) {
     console.error("Error creating project:", error.message);
-     return null
+    return null
   }
 };
 
@@ -114,7 +114,7 @@ const updateProject = async (data: any) => {
         status,
       })
       .eq("id", id)
-       .select()
+      .select()
       .single();
 
     if (projectError) throw projectError;
@@ -142,31 +142,50 @@ const updateProject = async (data: any) => {
       .insert(projectSkills);
 
     if (insertSkillsError) throw insertSkillsError;
-     return project;
+    return project;
   } catch (error) {
     console.error("Error updating project:", error.message);
-      return null;
+    return null;
   }
 };
 
 const deleteProject = async (id: string) => {
   try {
-      const { data: project, error } = await supabase
+    const { data: project, error } = await supabase
       .from("projects")
       .update({
         is_destroyed: true,
       })
       .eq("id", id)
-        .select()
+      .select()
       .single()
-      if(error) {
-          throw new Error("Error")
-      }
-      return project;
+    if (error) {
+      throw new Error("Error")
+    }
+    return project;
   } catch (error) {
     console.error("Error deleting project:", error.message);
-      return null;
+    return null;
   }
 };
 
-export { createProject, getAllProject,getAllProjects, updateProject, deleteProject };
+const getIDDetailProject = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", id);
+
+    if (error) {
+      throw error;
+    }
+    console.log("Data của employee project: ", data);
+    return data;
+  }
+  catch (error) {
+    console.error("Error fetching employee projects:", error);
+    return [];
+  }
+}
+
+export {getIDDetailProject, createProject, getAllProject, getAllProjects, updateProject, deleteProject };
