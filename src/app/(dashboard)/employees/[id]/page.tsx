@@ -13,11 +13,18 @@ type Employee = {
   email: string;
   joining_date: string;
   isDestroy: boolean;
-  role_id:string;
+  role_id: string;
   roles: {
     role_name: string;
   };
+  employee_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
+
 
 type EmployeeProject = {
   id: string;
@@ -98,18 +105,16 @@ const SingleEmployeePage = () => {
       console.error("ID không hợp lệ");
       return;
     }
-  
+
     try {
       setLoading(true);
       const dataEmployees = await getIDEmployees(id);
-  
+
       if (!dataEmployees || !Array.isArray(dataEmployees)) {
         console.error("Dữ liệu trả về không hợp lệ:", dataEmployees);
         setEmployees([]);
         return;
       }
-  
-      // Gán dữ liệu vào state, đảm bảo khớp kiểu Employee[]
       setEmployees(dataEmployees as Employee[]);
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -117,7 +122,7 @@ const SingleEmployeePage = () => {
       setLoading(false);
     }
   };
-  
+
 
   const fetchIDEmployeesProject = async () => {
     try {
@@ -200,6 +205,29 @@ const SingleEmployeePage = () => {
                       )}
                     </div>
                   </div>
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
+                    <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
+                      <Image
+                        src="/task.png"
+                        alt="Skills"
+                        width={14}
+                        height={14}
+                      />
+                      {employee.employee_skills && employee.employee_skills.length > 0 ? (
+                        <span className="text-gray-500 text-sm">
+                          Skills:{" "}
+                          {employee.employee_skills
+                            .map((skill) => skill.skills?.name) 
+                            .filter((name) => name) 
+                            .join(", ")} 
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-sm">
+                          No skills assigned
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
@@ -219,9 +247,9 @@ const SingleEmployeePage = () => {
               pagination={{ pageSize: 3, position: ["bottomCenter"] }}
             />
           ) : (
-            <p className="bg-gradient-to-r from-lime-400 to-lime-900 text-white font-bold text-center p-4 rounded-lg shadow-md">
-              Nhân viên này chưa tham gia dự án nào
-            </p>
+            <h2 className="text-2xl font-bold uppercase text-gray-800 border-b-2 border-blue-500 pb-2 mb-5">
+              This employee has not participated in any projects
+            </h2>
           )}
         </div>
       </div>

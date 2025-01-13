@@ -16,6 +16,12 @@ type Employee = {
     name: string;
   };
   joining_date: string;
+  employee_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
 
 const columns = [
@@ -42,6 +48,11 @@ const columns = [
   {
     label: "Role",
     key: "role",
+    className: "hidden lg:table-cell",
+  },
+  {
+    label: "Skills",
+    key: "skills",
     className: "hidden lg:table-cell",
   },
   {
@@ -185,6 +196,19 @@ const employeesListPage = ({ searchQuery }: Props) => {
           <td className="hidden md:table-cell">{item.email}</td>
           <td className="hidden md:table-cell">{item.joining_date}</td>
           <td className="hidden md:table-cell">{item.roles?.name}</td>
+          <td className="hidden md:table-cell">{item.employee_skills && item.employee_skills.length > 0 ? (
+            <span className="text-gray-500 text-sm">
+              {" "}
+              {item.employee_skills
+                .map((skill) => skill.skills?.name)
+                .filter((name) => name)
+                .join(", ")}
+            </span>
+          ) : (
+            <span className="text-gray-500 text-sm">
+              No skills assigned
+            </span>
+          )}</td>
           <td>
             <div className="flex items-center gap-2">
               <Link href={`/employees/${item.id}`}>

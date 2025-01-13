@@ -25,7 +25,11 @@ const getAllEmployees = async (page: number, pageSize: number) => {
             *,
             roles (
               role_name
-            )
+            ),
+              employee_skills(
+          *,
+          skills(name)
+        )
           `,
         { count: "exact" },
       )
@@ -72,15 +76,17 @@ const getInforFromProject = async (id) => {
   }
 };
 
-// Get id Employee
-
 const getIDEmployees = async (id) => {
   try {
     const { data, error } = await supabase
       .from("employees")
       .select(`
         *,
-        roles(*)
+        roles(*),
+         employee_skills(
+          *,
+          skills(name)
+        )
       `)
       .eq("id", id);
 
