@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "../app/config/AuthContext";
 
 const menuItems = [
   {
@@ -52,19 +53,16 @@ const menuItems = [
         icon: "/profile.png",
         label: "Profile",
         href: "/profile",
-        visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/setting.png",
         label: "Settings",
         href: "/settings",
-        visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/logout.png",
         label: "Logout",
         href: "/logout",
-        visible: ["admin", "teacher", "student", "parent"],
       },
     ],
   },
@@ -72,6 +70,34 @@ const menuItems = [
 
 const Menu = () => {
   const pathname = usePathname();
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+  };
+
+  const isActiveItem = (itemHref: string) => {
+    if (itemHref === "/admin") {
+      return pathname === "/" || pathname === "/admin";
+    }
+    if (itemHref === "/employees") {
+      return pathname.startsWith("/employees");
+    }
+     if(itemHref === "/projects") {
+       return pathname.startsWith("/projects");
+    }
+     if(itemHref === "/roles") {
+        return pathname.startsWith("/roles");
+    }
+    if(itemHref === "/skills") {
+        return pathname.startsWith("/skills");
+    }
+    if(itemHref === "/manage") {
+         return pathname.startsWith("/manage");
+    }
+    return pathname === itemHref;
+  };
+
   return (
     <div className="mt-4 text-sm">
       {menuItems.map((i) => (
@@ -80,7 +106,22 @@ const Menu = () => {
             {i.title}
           </span>
           {i.items.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = isActiveItem(item.href);
+
+            if (item.label === "Logout") {
+              return (
+                <button
+                  key={item.label}
+                  onClick={handleLogout}
+                  className={`flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight ${
+                    isActive ? "font-bold text-lamaBlack bg-lamaGreen" : ""
+                  }`}
+                >
+                  <Image src={item.icon} alt="" width={20} height={20} />
+                  <span className="hidden lg:block">{item.label}</span>
+                </button>
+              );
+            }
             return (
               <Link
                 href={item.href}
