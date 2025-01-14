@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Table from "../../../components/Table";
-import Pagination from "../../../components/Pagination";
-import FormModal from "../../../components/FormModal";
+import Table from "../../components/Table";
+import Pagination from "../../components/Pagination";
+import FormModal from "../../components/FormModal";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { getAllEmployees, searchEmployees } from "../../../api/employee";
+import { getAllEmployees, searchEmployees } from "../../api/employee";
 import { Spin, message } from "antd";
 
 type Employee = {
@@ -16,12 +16,24 @@ type Employee = {
     name: string;
   };
   joining_date: string;
+  employee_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
 
 const columns = [
   {
+    label: "STT",
+    key: "stt",
+    className: "hidden md:table-cell p-4",
+  },
+  {
     label: "Name",
     key: "info",
+    className: "hidden md:table-cell p-4",
   },
   {
     label: "Email",
@@ -36,6 +48,11 @@ const columns = [
   {
     label: "Role",
     key: "role",
+    className: "hidden lg:table-cell",
+  },
+  {
+    label: "Skills",
+    key: "skills",
     className: "hidden lg:table-cell",
   },
   {
@@ -163,43 +180,60 @@ const employeesListPage = ({ searchQuery }: Props) => {
     [messageApi],
   );
   const renderRow = useCallback(
-    (item: Employee) => (
-      <tr
-        key={item.id}
-        className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      >
-        <td className="flex items-center gap-4 p-4">
-          <div className="flex flex-col">
-            <h3 className="font-semibold">{item.name}</h3>
-          </div>
-        </td>
-        <td className="hidden md:table-cell">{item.email}</td>
-        <td className="hidden md:table-cell">{item.joining_date}</td>
-        <td className="hidden md:table-cell">{item.roles?.name}</td>
-        <td>
-          <div className="flex items-center gap-2">
-            <Link href={`/employees/${item.id}`}>
-              <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-                <Image src="/view.png" alt="" width={16} height={16} />
-              </button>
-            </Link>
-            <FormModal
-              table="employee"
-              type="update"
-              data={item}
-              onItemChange={handleEmployeeChange}
-            />
-            <FormModal
-              table="employee"
-              type="delete"
-              id={item.id}
-              onItemChange={handleEmployeeChange}
-            />
-          </div>
-        </td>
-      </tr>
-    ),
-    [handleEmployeeChange],
+    (item: Employee, index: number) => {
+      const stt = (currentPage - 1) * itemsPerPage + index + 1;
+      return (
+        <tr
+          key={item.id}
+          className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+        >
+          <td className="hidden md:table-cell p-4">{stt}</td>
+          <td className="flex items-center gap-4 p-4">
+            <div className="flex flex-col">
+              <h3 className="font-semibold">{item.name}</h3>
+            </div>
+          </td>
+          <td className="hidden md:table-cell">{item.email}</td>
+          <td className="hidden md:table-cell">{item.joining_date}</td>
+          <td className="hidden md:table-cell">{item.roles?.name}</td>
+          <td className="hidden md:table-cell">
+            {item.employee_skills && item.employee_skills.length > 0 ? (
+              <span className="text-gray-500 text-sm">
+                {" "}
+                {item.employee_skills
+                  .map((skill) => skill.skills?.name)
+                  .filter((name) => name)
+                  .join(", ")}
+              </span>
+            ) : (
+              <span className="text-gray-500 text-sm">No skills assigned</span>
+            )}
+          </td>
+          <td>
+            <div className="flex items-center gap-2">
+              <Link href={`/employees/${item.id}`}>
+                <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+                  <Image src="/view.png" alt="" width={16} height={16} />
+                </button>
+              </Link>
+              <FormModal
+                table="employee"
+                type="update"
+                data={item}
+                onItemChange={handleEmployeeChange}
+              />
+              <FormModal
+                table="employee"
+                type="delete"
+                id={item.id}
+                onItemChange={handleEmployeeChange}
+              />
+            </div>
+          </td>
+        </tr>
+      );
+    },
+    [currentPage, itemsPerPage, handleEmployeeChange],
   );
 
   const memoizedTable = useMemo(() => {
@@ -211,7 +245,12 @@ const employeesListPage = ({ searchQuery }: Props) => {
         <div className="p-4 text-center text-gray-500">No employees found.</div>
       );
     }
-    return <Table renderRow={renderRow} data={employees} />;
+    return (
+      <Table
+        renderRow={(item) => renderRow(item, employees.indexOf(item))}
+        data={employees}
+      />
+    );
   }, [employees, loading, noResults, renderRow]);
 
   const handlePageChange = (newPage: number) => {

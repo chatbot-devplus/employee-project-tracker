@@ -1,11 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { getIDEmployees, getInforFromProject } from "../../../../api/employee";
+import { getIDEmployees, getInforFromProject } from "../../../api/employee";
 import { useParams } from "next/navigation";
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-
+import { Table } from "antd";
+import type { TableProps } from "antd";
 
 type Employee = {
   id: string;
@@ -13,10 +12,16 @@ type Employee = {
   email: string;
   joining_date: string;
   isDestroy: boolean;
-  role_id:string;
+  role_id: string;
   roles: {
     role_name: string;
   };
+  employee_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
 
 type EmployeeProject = {
@@ -37,51 +42,53 @@ type EmployeeProject = {
   };
 };
 
+const columns: TableProps<EmployeeProject>["columns"] = [
+  {
+    title: "Project Name",
+    dataIndex: ["projects", "name"],
+    key: "projectName",
+  },
+  {
+    title: "Role",
+    dataIndex: "role",
+    key: "role",
+  },
+  {
+    title: "Project Description",
+    dataIndex: ["projects", "description"],
+    key: "projectDescription",
+  },
+  {
+    title: "Project Start Date",
+    dataIndex: ["projects", "start_date"],
+    key: "projectEndDate",
+  },
+  {
+    title: "Project End Date",
+    dataIndex: ["projects", "end_date"],
+    key: "projectStartDate",
+  },
+  {
+    title: "Employee Joining Date",
+    dataIndex: "joining_date",
+    key: "employeeJoiningDate",
+  },
 
-const columns: TableProps<EmployeeProject>['columns'] = [
   {
-    title: 'Project Name',
-    dataIndex: ['projects', 'name'],
-    key: 'projectName',
-  },
-  {
-    title: 'Role',
-    dataIndex: 'role',
-    key: 'role',
-  },
-  {
-    title: 'Project Description',
-    dataIndex: ['projects', 'description'],
-    key: 'projectDescription',
-  },
-  {
-    title: 'Project Start Date',
-    dataIndex: ['projects', 'start_date'],
-    key: 'projectEndDate',
-  },
-  {
-    title: 'Project End Date',
-    dataIndex: ['projects', 'end_date'],
-    key: 'projectStartDate',
-  },
-  {
-    title: 'Employee Joining Date',
-    dataIndex: 'joining_date',
-    key: 'employeeJoiningDate',
-  },
-
-  {
-    title: 'Status',
-    key: 'status',
+    title: "Status",
+    key: "status",
     render: (_, record) => (
       <button
-        className={`px-4 py-2 text-white rounded ${record.outing_date ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
-          }`}
+        className={`px-4 py-2 text-white rounded ${
+          record.outing_date
+            ? "bg-red-500 hover:bg-red-600"
+            : "bg-green-500 hover:bg-green-600"
+        }`}
       >
-        {record.outing_date ? 'Leave' : 'Not yet'}
+        {record.outing_date ? "Leave" : "Not yet"}
       </button>
     ),
-  }
+  },
 ];
 
 const SingleEmployeePage = () => {
@@ -98,18 +105,16 @@ const SingleEmployeePage = () => {
       console.error("ID không hợp lệ");
       return;
     }
-  
+
     try {
       setLoading(true);
       const dataEmployees = await getIDEmployees(id);
-  
+
       if (!dataEmployees || !Array.isArray(dataEmployees)) {
         console.error("Dữ liệu trả về không hợp lệ:", dataEmployees);
         setEmployees([]);
         return;
       }
-  
-      // Gán dữ liệu vào state, đảm bảo khớp kiểu Employee[]
       setEmployees(dataEmployees as Employee[]);
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -117,7 +122,6 @@ const SingleEmployeePage = () => {
       setLoading(false);
     }
   };
-  
 
   const fetchIDEmployeesProject = async () => {
     try {
@@ -144,7 +148,7 @@ const SingleEmployeePage = () => {
           <div className="bg-lamaGreenLight py-6 px-4 rounded-md flex-1 flex gap-4  ">
             <div className="w-1/3">
               <Image
-                src="https://images.pexels.com/photos/5414817/pexels-photo-5414817.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3408.jpg"
                 alt="Employee"
                 width={144}
                 height={144}
@@ -198,7 +202,30 @@ const SingleEmployeePage = () => {
                           No role assigned
                         </span>
                       )}
-
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
+                    <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
+                      <Image
+                        src="/task.png"
+                        alt="Skills"
+                        width={14}
+                        height={14}
+                      />
+                      {employee.employee_skills &&
+                      employee.employee_skills.length > 0 ? (
+                        <span className="text-gray-500 text-sm">
+                          Skills:{" "}
+                          {employee.employee_skills
+                            .map((skill) => skill.skills?.name)
+                            .filter((name) => name)
+                            .join(", ")}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-sm">
+                          No skills assigned
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -217,17 +244,14 @@ const SingleEmployeePage = () => {
               columns={columns}
               dataSource={employee_project}
               rowKey="id"
-              pagination={{ pageSize: 3, position: ['bottomCenter'], }}
+              pagination={{ pageSize: 3, position: ["bottomCenter"] }}
             />
           ) : (
-            <p className="bg-gradient-to-r from-lime-400 to-lime-900 text-white font-bold text-center p-4 rounded-lg shadow-md">
-              Nhân viên này chưa tham gia dự án nào
-            </p>
+            <h2 className="text-2xl font-bold uppercase text-gray-800 border-b-2 border-blue-500 pb-2 mb-5">
+              This employee has not participated in any projects
+            </h2>
           )}
         </div>
-
-
-
       </div>
     </div>
   );

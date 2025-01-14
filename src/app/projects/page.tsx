@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Table from "../../../components/Table";
-import Pagination from "../../../components/Pagination";
+import Table from "../../components/Table";
+import Pagination from "../../components/Pagination";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import FormModal from "../../../components/FormModal";
-import { getAllProjects } from "../../../api/project";
+import FormModal from "../../components/FormModal";
+import { getAllProjects } from "../../api/project";
 import { message, Spin } from "antd";
 
 export type project = {
@@ -20,11 +20,6 @@ export type project = {
 };
 
 const columns = [
-  {
-    label: "project ID",
-    key: "projectID",
-    className: "hidden md:table-cell p-4",
-  },
   {
     label: "Project name",
     key: "name",
@@ -63,7 +58,6 @@ const projectsListPage = () => {
   const [endDate, setEndDate] = useState<string>("");
   const [messageApi, contextHolder] = message.useMessage();
 
-
   const fetchProjects = useCallback(
     async (page: number) => {
       try {
@@ -93,7 +87,6 @@ const projectsListPage = () => {
       endDate,
     ],
   );
-
 
   useEffect(() => {
     fetchProjects(1);
@@ -137,10 +130,7 @@ const projectsListPage = () => {
         key={item.id}
         className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
       >
-        <td className="hidden md:table-cell flex items-center p-4">
-          {item.id}
-        </td>
-        <td className="hidden md:table-cell">{item.name}</td>
+        <td className="hidden md:table-cell p-4">{item.name}</td>
         <td className="hidden md:table-cell">{item.status}</td>
         <td className="hidden md:table-cell">{item.start_date}</td>
         <td className="hidden md:table-cell">{item.end_date}</td>
@@ -175,7 +165,7 @@ const projectsListPage = () => {
       return <Spin />;
     }
     return <Table renderRow={renderRow} data={projects} />;
-  }, [projects, renderRow, loading])
+  }, [projects, renderRow, loading]);
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     fetchProjects(newPage);
@@ -206,7 +196,6 @@ const projectsListPage = () => {
     setCurrentPage(1);
   };
 
-
   const totalPages = useMemo(() => {
     return Math.ceil(totalItems / itemsPerPage);
   }, [totalItems, itemsPerPage]);
@@ -215,73 +204,54 @@ const projectsListPage = () => {
       {contextHolder}
       {/* TOP */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">
-          All Projects
-        </h1>
-        <div className="flex items-center gap-2">
-          <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
-            Items per page:
-          </label>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-            className="p-1 rounded-md text-xs border border-gray-300"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-          <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
+        <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <div className="flex items-center gap-2">
+            <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
+              Items per page:
+            </label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="p-1 rounded-md text-xs border border-gray-300"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-[200px] p-2 bg-transparent outline-none"
+                value={localSearchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+            <label htmlFor="startDate" className="text-gray-500 text-xs">
+              Start Date:
+            </label>
             <input
-              type="text"
-              placeholder="Search..."
-              className="w-[200px] p-2 bg-transparent outline-none"
-              value={localSearchQuery}
-              onChange={handleSearchChange}
+              type="date"
+              id="startDate"
+              className="p-1 rounded-md text-xs border border-gray-300"
+              value={startDate}
+              onChange={handleStartDateChange}
+            />
+            <label htmlFor="endDate" className="text-gray-500 text-xs">
+              End Date:
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              className="p-1 rounded-md text-xs border border-gray-300"
+              value={endDate}
+              onChange={handleEndDateChange}
             />
           </div>
-          <label htmlFor="startDate" className="text-gray-500 text-xs">
-            Start Date:
-          </label>
-          <input
-            type="date"
-            id="startDate"
-            className="p-1 rounded-md text-xs border border-gray-300"
-            value={startDate}
-            onChange={handleStartDateChange}
-          />
-          <label htmlFor="endDate" className="text-gray-500 text-xs">
-            End Date:
-          </label>
-          <input
-            type="date"
-            id="endDate"
-            className="p-1 rounded-md text-xs border border-gray-300"
-            value={endDate}
-            onChange={handleEndDateChange}
-          />
-        </div>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreen">
-              <Image
-                src="/filter.png"
-                alt=""
-                width={14}
-                height={14}
-              />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaGreen">
-              <Image
-                src="/sort.png"
-                alt=""
-                width={14}
-                height={14}
-              />
-            </button>
             <FormModal
               table="project"
               type="create"
@@ -295,20 +265,14 @@ const projectsListPage = () => {
         <thead className="text-gray-500 text-xs uppercase">
           <tr>
             {columns.map((column) => (
-              <th
-                key={column.key}
-                className={`p-4 ${column.className || ""}`}
-              >
+              <th key={column.key} className={`p-4 ${column.className || ""}`}>
                 {column.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
-          {memoizedTable}
-        </tbody>
+        <tbody>{memoizedTable}</tbody>
       </table>
-      {/* PAGINATION */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
