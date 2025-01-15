@@ -5,6 +5,7 @@ import {
   getProjectCount,
   getEmployeesByRole,
   getProjectsByStatus,
+  getSkillCount,
 } from "../api/dashboard";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [employeesByRole, setEmployeesByRole] = useState([]);
   const [projectsByStatus, setProjectsByStatus] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [skillCount, setSkillCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +28,9 @@ const Dashboard = () => {
         const projects = await getProjectCount();
         const employeesByRoleData = await getEmployeesByRole();
         const projectData = await getProjectsByStatus();
+
+        const skills = await getSkillCount();
+        setSkillCount(skills);
 
         setEmployeeCount(employees);
         setProjectCount(projects);
@@ -84,7 +89,7 @@ const Dashboard = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen p-6 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      {/* <h1 className="text-2xl font-bold mb-6">Dashboard</h1> */}
       {loading ? (
         <p className="text-lg text-gray-600">Loading...</p>
       ) : (
@@ -104,6 +109,12 @@ const Dashboard = () => {
                 Total Projects
               </h2>
               <p className="text-5xl font-bold text-blue-500">{projectCount}</p>
+            </div>
+            <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                Total Skills
+              </h2>
+              <p className="text-5xl font-bold text-purple-500">{skillCount}</p>
             </div>
           </div>
 
