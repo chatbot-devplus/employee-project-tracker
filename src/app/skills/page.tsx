@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { getAllRole } from "../../api/roles";
 import { message } from "antd";
 import Pagination from "../../components/Pagination";
 import FormModal from "../../components/FormModal";
@@ -13,8 +12,8 @@ type Skill = {
 
 const columns = [
   {
-    label : "STT",
-    key: "stt"
+    label: "STT",
+    key: "stt",
   },
   {
     label: "Name",
@@ -32,7 +31,7 @@ const SkillComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage();
 
   const fetchSkills = useCallback(
     async (page: number) => {
@@ -56,18 +55,18 @@ const SkillComponent = () => {
     [itemsPerPage, messageApi],
   );
   const handleSkillChange = useCallback(
-    (newSkills: Skill, action: "create" | "update" | "delete") => {
-      if (action === "create") {
+        (newSkills: Skill, action: "create" | "update" | "delete", data?: Skill) => {
+      if (action === "create" && newSkills) {
         setSkills((prevSkills) => [...prevSkills, newSkills]);
         messageApi.open({
           type: "success",
           content: "Skills created successfully!",
         });
       }
-      if (action === "update") {
+      if (action === "update" && newSkills) {
         setSkills((prevSkills) =>
-          prevSkills.map((role) =>
-            role.id === newSkills.id ? newSkills : role,
+          prevSkills.map((skill) =>
+            skill.id === newSkills.id ? newSkills : skill,
           ),
         );
         messageApi.open({
@@ -75,17 +74,19 @@ const SkillComponent = () => {
           content: "Skills updated successfully!",
         });
       }
-      if (action === "delete") {
+         if (action === "delete" && data) {
         setSkills((prevSkills) =>
-          prevSkills.filter((role) => role.id !== newSkills.id),
+          prevSkills.filter((skill) => skill.id !== data.id),
         );
         messageApi.open({
           type: "success",
           content: "Skills deleted successfully!",
         });
-      }
+            }
+        fetchSkills(currentPage);
+        
     },
-    [messageApi],
+    [messageApi, currentPage, fetchSkills],
   );
   const handleItemsPerPageChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -95,6 +96,7 @@ const SkillComponent = () => {
   };
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+      fetchSkills(page)
   };
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -149,36 +151,35 @@ const SkillComponent = () => {
             {skills.map((item, index: number) => {
               const stt = (currentPage - 1) * itemsPerPage + index + 1;
               return (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-              > 
-              <td className="items-center gap-4 p-4">
-                {stt}
-              </td>
-                <td className="flex items-center gap-4 p-4">
-                  <div className="flex flex-col">
-                    <h3 className="font-semibold">{item.name}</h3>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <FormModal
-                      table="skill"
-                      type="update"
-                      data={item}
-                      onItemChange={handleSkillChange}
-                    />
-                    <FormModal
-                      table="skill"
-                      type="delete"
-                      id={item.id}
-                      onItemChange={handleSkillChange}
-                    />
-                  </div>
-                </td>
-              </tr>
-              )
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+                >
+                  <td className="items-center gap-4 p-4">{stt}</td>
+                  <td className="flex items-center gap-4 p-4">
+                    <div className="flex flex-col">
+                      <h3 className="font-semibold">{item.name}</h3>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <FormModal
+                        table="skill"
+                        type="update"
+                        data={item}
+                        onItemChange={handleSkillChange}
+                      />
+                      <FormModal
+                        table="skill"
+                        type="delete"
+                        id={item.id}
+                        data={item}
+                        onItemChange={handleSkillChange}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              );
             })}
           </tbody>
         </table>
