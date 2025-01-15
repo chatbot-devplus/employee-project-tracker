@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Collapse, Input, Tag, Typography, Space, Spin } from "antd";
+import { Collapse, Input, Tag, Typography, Space, Spin} from "antd";
 import { FilterOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { format } from "date-fns";
 import { getProjectHistory } from "../api/project";
-
 const { Title, Text } = Typography;
 
 interface UpdateEvent {
@@ -18,7 +17,7 @@ export default function UpdateHistory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [events, setEvents] = useState<UpdateEvent[]>([]);
   const [loading, setLoading] = useState(true);
-
+  
   const fetchProjectHistory = useCallback(async () => {
     setLoading(true);
     try {

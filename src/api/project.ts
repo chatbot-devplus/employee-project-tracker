@@ -13,6 +13,7 @@ const getAllProject = async () => {
     return [];
   }
 };
+
 const getAllProjects = async (
   page: number,
   pageSize: number,
@@ -23,7 +24,15 @@ const getAllProjects = async (
   try {
     let baseQuery = supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select(
+        `
+          *,
+          project_skills(
+            skill_id,
+            skills(name)
+          )
+        `,
+      )
       .eq("is_destroyed", false)
       .order("created_at", { ascending: false });
 
@@ -49,12 +58,14 @@ const getAllProjects = async (
     if (error) {
       throw error;
     }
+
     return { data, total: count ?? 0 };
   } catch (error) {
     console.error("Error fetching projects:", error);
     return { data: [], total: 0 };
   }
 };
+
 
 const createProject = async (data: any) => {
   const { name, description, startDate, endDate, status, skills } = data;
@@ -200,7 +211,15 @@ const getIDDetailProject = async (id) => {
   try {
     const { data, error } = await supabase
       .from("projects")
-      .select("*")
+      .select(
+        `
+          *,
+          project_skills(
+            skill_id,
+            skills(name)
+          )
+        `,
+      )
       .eq("id", id);
 
     if (error) {
@@ -219,39 +238,11 @@ const getProjectHistory = async () => {
     const { data, error } = await supabase
       .from('project_history')
       .select('*')
-      .order("update_time", { ascending: false });
 
     if (error) throw error;
     return data
   } catch (error) {
     console.error('Error fetching project history:', error);
-  }
-}
-
-
-async function logProjectHistory(actionType: string, data: { description?: string }) {
-  try {
-    if (!actionType && (!data || !data.description)) {
-      throw new Error('actionType hoặc description là bắt buộc.');
-    }
-
-    const { error } = await supabase
-      .from('project_history')
-      .insert([
-        {
-          action_type: actionType || null,
-          description: data?.description || null,
-          update_time: new Date(),
-        },
-      ]);
-
-    if (error) {
-      throw error;
-    }
-
-    console.log('Project history logged successfully');
-  } catch (err) {
-    console.error('Error logging project history:', err.message);
   }
 }
 
@@ -262,6 +253,5 @@ export {
   getAllProjects,
   updateProject,
   deleteProject,
-  logProjectHistory,
-  getProjectHistory
+  getProjectHistory,
 };
