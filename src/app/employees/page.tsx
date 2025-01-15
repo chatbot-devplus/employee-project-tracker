@@ -72,7 +72,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
   const [localSearchQuery, setLocalSearchQuery] = useState("");
   const [noResults, setNoResults] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 

@@ -20,6 +20,10 @@ export type project = {
 };
 
 const columns = [
+  { label: "STT",
+    key: "stt",
+    className: "hidden md:table-cell p-4",
+  },
   {
     label: "Project name",
     key: "name",
@@ -50,7 +54,7 @@ const projectsListPage = () => {
   const [projects, setProjects] = useState<project[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [localSearchQuery, setLocalSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
@@ -125,11 +129,14 @@ const projectsListPage = () => {
     [messageApi],
   );
   const renderRow = useCallback(
-    (item: project) => (
+    (item: project, index: number) => {
+      const stt = (currentPage - 1) * itemsPerPage + index + 1;
+      return (
       <tr
         key={item.id}
         className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      >
+      > 
+        <td className="hidden md:table-cell p-4">{stt}</td>
         <td className="hidden md:table-cell p-4">{item.name}</td>
         <td className="hidden md:table-cell">{item.status}</td>
         <td className="hidden md:table-cell">{item.start_date}</td>
@@ -156,7 +163,8 @@ const projectsListPage = () => {
           </div>
         </td>
       </tr>
-    ),
+      );
+    },
     [handleProjectChange],
   );
 
@@ -164,7 +172,7 @@ const projectsListPage = () => {
     if (loading) {
       return <Spin />;
     }
-    return <Table renderRow={renderRow} data={projects} />;
+    return <Table renderRow={(item) => renderRow(item, projects.indexOf(item))} data={projects} />;
   }, [projects, renderRow, loading]);
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);

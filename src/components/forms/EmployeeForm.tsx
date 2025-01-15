@@ -53,22 +53,33 @@ const EmployeeForm = ({
   const [roles, setRoles] = useState<{ id: string; role_name: string }[]>([]);
 
   useEffect(() => {
+    // Hiển thị role hiện tại nếu đang ở chế độ update và có role_id
+    if (type === "update" && data?.role_id) {
+      setValue("role", data.role_id);
+    }
     const fetchRoles = async () => {
       try {
         const dataRoles = await getAllRoles();
         setRoles(dataRoles);
+        // Kiểm tra và gán role hiện tại nếu đang ở chế độ update
+        if (type === "update" && data?.role_id) {
+          const existingRole = dataRoles.find((role) => role.id === data.role_id);
+          if (existingRole) {
+            setValue("role", existingRole.id);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch roles:", error);
       }
     };
     fetchRoles();
-  }, []);
-
-  useEffect(() => {
-    if (type === "update" && data?.role_id) {
-      setValue("role", data.role_id);
-    }
   }, [data, setValue, type]);
+
+  // useEffect(() => {
+  //   if (type === "update" && data?.role_id) {
+  //     setValue("role", data.role_id);
+  //   }
+  // }, [data, setValue, type]);
 
   const onSubmit = handleSubmit(async (formData) => {
     try {

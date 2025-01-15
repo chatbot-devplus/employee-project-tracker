@@ -39,7 +39,7 @@ const menuItems = [
       },
       {
         icon: "/more.png",
-        label: "Manage",
+        label: "Employee Project",
         href: "/manage",
         visible: ["admin", "manage"],
       },

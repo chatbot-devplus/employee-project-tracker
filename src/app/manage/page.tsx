@@ -24,6 +24,16 @@ type EmployeeProject = {
 
 const columns = [
   {
+    label: "STT",
+    key: "stt",
+    className: "p-4"
+  },
+  {
+    label: "Name Employee",
+    key: "employee_name",
+    className: "hidden md:table-cell p-4",
+  },
+  {
     label: "Name Project",
     key: "project_name",
     className: "hidden md:table-cell p-4",
@@ -31,11 +41,6 @@ const columns = [
   {
     label: "Description",
     key: "description",
-    className: "hidden md:table-cell p-4",
-  },
-  {
-    label: "Name Employee",
-    key: "employee_name",
     className: "hidden md:table-cell p-4",
   },
   {
@@ -131,14 +136,17 @@ const EmployeeProjectComponent = () => {
     setCurrentPage(page);
   };
   const renderRow = useCallback(
-    (item: EmployeeProject) => (
+    (item: EmployeeProject, index : number) => {
+      const stt = (currentPage - 1) * itemsPerPage + index + 1;
+      return (
       <tr
         key={item.id}
         className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      >
+      > 
+        <td className="hidden md:table-cell pl-4">{stt}</td>
+        <td className="hidden md:table-cell">{item.employees.name}</td>
         <td className="hidden md:table-cell">{item.projects.name}</td>
         <td className="hidden md:table-cell">{item.projects.description}</td>
-        <td className="hidden md:table-cell">{item.employees.name}</td>
         <td className="hidden md:table-cell">{item.roles.role_name}</td>
         <td className="hidden md:table-cell">{item.joining_date}</td>
         <td className="hidden md:table-cell">
@@ -163,7 +171,7 @@ const EmployeeProjectComponent = () => {
           </div>
         </td>
       </tr>
-    ),
+    )},
     [handleEmployeeProjectChange],
   );
 
@@ -175,7 +183,7 @@ const EmployeeProjectComponent = () => {
     if (loading) {
       return <Spin />;
     }
-    return <Table renderRow={renderRow} data={employeeProject} />;
+    return <Table renderRow={(item) => renderRow(item, employeeProject.indexOf(item))} data={employeeProject} />;
   }, [employeeProject, renderRow, loading]);
   return (
     <>

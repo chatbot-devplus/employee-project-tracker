@@ -19,7 +19,7 @@ export default function DashboardLayout({
               href="/"
               className="flex items-center justify-center lg:justify-start gap-2"
             >
-              <Image src="/logo.webp" alt="logo" width={32} height={32} />
+              <Image src="/logo.webp" className="rounded-full" alt="logo" width={40} height={40} />
               <span className="hidden lg:block font-bold">Tracking</span>
             </Link>
             <Menu />
