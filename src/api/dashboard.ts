@@ -63,7 +63,7 @@ export const getEmployeesByRole = async () => {
         id,
         role_name,
         employees(id) 
-      `
+      `,
       )
       .eq("is_destroyed", false);
 

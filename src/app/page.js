@@ -89,6 +89,7 @@ const Dashboard = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen p-6 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
       {loading ? (
         <p className="text-lg text-gray-600">Loading...</p>
       ) : (

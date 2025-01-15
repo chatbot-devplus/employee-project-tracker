@@ -10,11 +10,8 @@ export default function DashboardLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <AuthCheck>
-            {children}
-          </AuthCheck>
+          <AuthCheck>{children}</AuthCheck>
         </AuthProvider>
-
       </body>
     </html>
   );

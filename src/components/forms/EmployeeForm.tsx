@@ -63,7 +63,9 @@ const EmployeeForm = ({
         setRoles(dataRoles);
         // Kiểm tra và gán role hiện tại nếu đang ở chế độ update
         if (type === "update" && data?.role_id) {
-          const existingRole = dataRoles.find((role) => role.id === data.role_id);
+          const existingRole = dataRoles.find(
+            (role) => role.id === data.role_id,
+          );
           if (existingRole) {
             setValue("role", existingRole.id);
           }

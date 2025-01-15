@@ -147,44 +147,53 @@ const employeesListPage = ({ searchQuery }: Props) => {
     return () => clearTimeout(timer);
   };
 
-    const handleEmployeeChange = useCallback(
-        (newEmployee: Employee, action: "create" | "update" | "delete", data?: Employee) => {
-            if (action === "create" && newEmployee) {
-                setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
-                messageApi.open({
-                    type: "success",
-                    content: "Employee created successfully!",
-                });
-            }
-            if (action === "update" && newEmployee) {
-                setEmployees((prevEmployees) =>
-                    prevEmployees.map((employee) =>
-                        employee.id === newEmployee.id ? newEmployee : employee,
-                    ),
-                );
-                messageApi.open({
-                    type: "success",
-                    content: "Employee updated successfully!",
-                });
-            }
-            if (action === "delete" && data) {
-                setEmployees((prevEmployees) =>
-                    prevEmployees.filter((employee) => employee.id !== data.id),
-                );
-                messageApi.open({
-                type: "success",
-                content: "Employee deleted successfully!",
-                });
-            }
-           if (debouncedSearchQuery) {
-                fetchSearchEmployees(debouncedSearchQuery, currentPage)
-            } else {
-                fetchEmployees(currentPage);
-            }
-        },
-        [messageApi, currentPage, debouncedSearchQuery, fetchEmployees, fetchSearchEmployees],
-    );
-
+  const handleEmployeeChange = useCallback(
+    (
+      newEmployee: Employee,
+      action: "create" | "update" | "delete",
+      data?: Employee,
+    ) => {
+      if (action === "create" && newEmployee) {
+        setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+        messageApi.open({
+          type: "success",
+          content: "Employee created successfully!",
+        });
+      }
+      if (action === "update" && newEmployee) {
+        setEmployees((prevEmployees) =>
+          prevEmployees.map((employee) =>
+            employee.id === newEmployee.id ? newEmployee : employee,
+          ),
+        );
+        messageApi.open({
+          type: "success",
+          content: "Employee updated successfully!",
+        });
+      }
+      if (action === "delete" && data) {
+        setEmployees((prevEmployees) =>
+          prevEmployees.filter((employee) => employee.id !== data.id),
+        );
+        messageApi.open({
+          type: "success",
+          content: "Employee deleted successfully!",
+        });
+      }
+      if (debouncedSearchQuery) {
+        fetchSearchEmployees(debouncedSearchQuery, currentPage);
+      } else {
+        fetchEmployees(currentPage);
+      }
+    },
+    [
+      messageApi,
+      currentPage,
+      debouncedSearchQuery,
+      fetchEmployees,
+      fetchSearchEmployees,
+    ],
+  );
 
   const renderRow = useCallback(
     (item: Employee, index: number) => {
