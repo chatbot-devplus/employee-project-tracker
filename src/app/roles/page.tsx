@@ -11,6 +11,9 @@ type Role = {
 };
 
 const columns = [
+  { label: "STT",
+    key: "stt",
+  },
   {
     label: "Name",
     key: "name",
@@ -25,7 +28,7 @@ const RolesComponent = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -137,18 +140,24 @@ const RolesComponent = () => {
           <thead className="text-gray-500 text-xs uppercase">
             <tr>
               {columns.map((column) => (
-                <th key={column.key} className="py-4">
+                <th key={column.key} className="py-4 pl-4">
                   {column.label}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {roles.map((item) => (
+            {roles.map((item, index: number) => {
+              const stt = (currentPage - 1) * itemsPerPage + index + 1;
+              return(
+              
               <tr
                 key={item.id}
                 className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
               >
+                <td className="items-center gap-4 p-4">
+                  {stt}
+                </td>
                 <td className="flex items-center gap-4 p-4">
                   <div className="flex flex-col">
                     <h3 className="font-semibold">{item.role_name}</h3>
@@ -171,7 +180,10 @@ const RolesComponent = () => {
                   </div>
                 </td>
               </tr>
-            ))}
+            
+            );
+            })
+          }
           </tbody>
         </table>
         <Pagination
