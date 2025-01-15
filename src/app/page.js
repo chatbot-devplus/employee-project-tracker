@@ -6,25 +6,10 @@ import {
   getEmployeesByRole,
   getProjectsByStatus,
 } from "../api/dashboard";
-import { Bar, Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-ChartJS.register(
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Dashboard = () => {
   const [employeeCount, setEmployeeCount] = useState(0);
@@ -47,7 +32,7 @@ const Dashboard = () => {
         setEmployeesByRole(employeesByRoleData);
         setProjectsByStatus(projectData);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Error loading dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -56,28 +41,7 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Data for Bar Chart
-  const barChartData = {
-    labels: ["Employees", "Projects"],
-    datasets: [
-      {
-        label: "Count",
-        data: [employeeCount, projectCount],
-        backgroundColor: ["#4CAF50", "#2196F3"],
-      },
-    ],
-  };
-
-  const barChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  };
-
-  // Data for Doughnut Chart (Employees by Department)
+  // Data for the donut chart (Employees by role)
   const doughnutRoleData = {
     labels: employeesByRole.map((item) => item.role),
     datasets: [
@@ -95,7 +59,7 @@ const Dashboard = () => {
     ],
   };
 
-  // Data for Doughnut Chart (Projects by Status)
+  // Data for the donut chart (Projects by status)
   const doughnutProjectData = {
     labels: projectsByStatus.map((item) => item.status),
     datasets: [
@@ -107,7 +71,7 @@ const Dashboard = () => {
     ],
   };
 
-  // Doughnut chart options
+  // Donut chart options
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -119,35 +83,45 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-md m-4">
-      <h1 className="text-lg font-semibold mb-4">Dashboard</h1>
+    <div className="bg-gray-100 min-h-screen p-6 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-lg text-gray-600">Loading...</p>
       ) : (
-        <>
-          <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-            <Bar data={barChartData} options={barChartOptions} />
+        <div className="w-full max-w-4xl">
+          {/* Summary cards */}
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
+            <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                Employees
+              </h2>
+              <p className="text-5xl font-bold text-green-500">
+                {employeeCount}
+              </p>
+            </div>
+            <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                Projects
+              </h2>
+              <p className="text-5xl font-bold text-blue-500">{projectCount}</p>
+            </div>
           </div>
 
-          <div className="flex flex-wrap justify-between mt-8">
-            <div
-              className="w-full md:w-1/2 p-4"
-              style={{ maxWidth: "300px", margin: "0 auto" }}
-            >
-              <h2 className="text-md font-semibold mb-2">
-                Employees by Department
+          {/* Charts */}
+          <div className="flex flex-wrap justify-between">
+            <div className="w-full md:w-1/2 p-4">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+                Employees by Role
               </h2>
-              <div style={{ height: "250px" }}>
+              <div style={{ height: "300px" }}>
                 <Doughnut data={doughnutRoleData} options={doughnutOptions} />
               </div>
             </div>
-
-            <div
-              className="w-full md:w-1/2 p-4"
-              style={{ maxWidth: "300px", margin: "0 auto" }}
-            >
-              <h2 className="text-md font-semibold mb-2">Projects by Status</h2>
-              <div style={{ height: "250px" }}>
+            <div className="w-full md:w-1/2 p-4">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+                Projects by Status
+              </h2>
+              <div style={{ height: "300px" }}>
                 <Doughnut
                   data={doughnutProjectData}
                   options={doughnutOptions}
@@ -155,7 +129,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
