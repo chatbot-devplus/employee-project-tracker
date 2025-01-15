@@ -93,7 +93,7 @@ const Dashboard = () => {
           <div className="flex flex-wrap justify-center gap-8 mb-8">
             <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                Employees
+                Total Employees
               </h2>
               <p className="text-5xl font-bold text-green-500">
                 {employeeCount}
@@ -101,7 +101,7 @@ const Dashboard = () => {
             </div>
             <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                Projects
+                Total Projects
               </h2>
               <p className="text-5xl font-bold text-blue-500">{projectCount}</p>
             </div>
