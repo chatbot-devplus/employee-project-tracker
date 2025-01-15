@@ -7,6 +7,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import FormModal from "../../components/FormModal";
 import { getAllProjects } from "../../api/project";
 import { message, Spin } from "antd";
+import UpdateHistory from "../../components/UpdateHistory";
 
 export type project = {
   id: string;
@@ -208,6 +209,7 @@ const projectsListPage = () => {
     return Math.ceil(totalItems / itemsPerPage);
   }, [totalItems, itemsPerPage]);
   return (
+    <>
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {contextHolder}
       {/* TOP */}
@@ -287,6 +289,10 @@ const projectsListPage = () => {
         onPageChange={handlePageChange}
       />
     </div>
+    <div>
+    <UpdateHistory />
+    </div>
+    </>
   );
 };
 
