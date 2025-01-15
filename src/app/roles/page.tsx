@@ -12,6 +12,10 @@ type Role = {
 
 const columns = [
   {
+    label: "STT",
+    key: "stt",
+  },
+  {
     label: "Name",
     key: "name",
   },
@@ -25,7 +29,7 @@ const RolesComponent = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -52,34 +56,35 @@ const RolesComponent = () => {
   );
 
   const handleRoleChange = useCallback(
-    (newRoles: Role, action: "create" | "update" | "delete") => {
-      if (action === "create") {
-        setRoles((prevRoles) => [...prevRoles, newRoles]);
-        messageApi.open({
-          type: "success",
-          content: "Role created successfully!",
-        });
-      }
-      if (action === "update") {
-        setRoles((prevRoles) =>
-          prevRoles.map((role) => (role.id === newRoles.id ? newRoles : role)),
-        );
-        messageApi.open({
-          type: "success",
-          content: "Role updated successfully!",
-        });
-      }
-      if (action === "delete") {
-        setRoles((prevRoles) =>
-          prevRoles.filter((role) => role.id !== newRoles.id),
-        );
-        messageApi.open({
-          type: "success",
-          content: "Role deleted successfully!",
-        });
-      }
+    (newRoles: Role, action: "create" | "update" | "delete", data?: Role) => {
+        if (action === "create" && newRoles) {
+            setRoles((prevRoles) => [...prevRoles, newRoles]);
+            messageApi.open({
+              type: "success",
+              content: "Role created successfully!",
+            });
+          }
+          if (action === "update" && newRoles) {
+            setRoles((prevRoles) =>
+              prevRoles.map((role) => (role.id === newRoles.id ? newRoles : role)),
+            );
+            messageApi.open({
+              type: "success",
+              content: "Role updated successfully!",
+            });
+          }
+         if (action === "delete" && data) {
+            setRoles((prevRoles) =>
+              prevRoles.filter((role) => role.id !== data.id),
+            );
+            messageApi.open({
+              type: "success",
+              content: "Role deleted successfully!",
+            });
+          }
+        fetchRoles(currentPage);
     },
-    [messageApi],
+      [messageApi, currentPage, fetchRoles],
   );
 
   const handleItemsPerPageChange = (
@@ -91,6 +96,7 @@ const RolesComponent = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchRoles(page)
   };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -137,41 +143,46 @@ const RolesComponent = () => {
           <thead className="text-gray-500 text-xs uppercase">
             <tr>
               {columns.map((column) => (
-                <th key={column.key} className="py-4">
+                <th key={column.key} className="py-4 pl-4">
                   {column.label}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {roles.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-              >
-                <td className="flex items-center gap-4 p-4">
-                  <div className="flex flex-col">
-                    <h3 className="font-semibold">{item.role_name}</h3>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <FormModal
-                      table="role"
-                      type="update"
-                      data={item}
-                      onItemChange={handleRoleChange}
-                    />
-                    <FormModal
-                      table="role"
-                      type="delete"
-                      id={item.id}
-                      onItemChange={handleRoleChange}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {roles.map((item, index: number) => {
+              const stt = (currentPage - 1) * itemsPerPage + index + 1;
+              return (
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+                >
+                  <td className="items-center gap-4 p-4">{stt}</td>
+                  <td className="flex items-center gap-4 p-4">
+                    <div className="flex flex-col">
+                      <h3 className="font-semibold">{item.role_name}</h3>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <FormModal
+                        table="role"
+                        type="update"
+                        data={item}
+                        onItemChange={handleRoleChange}
+                      />
+                      <FormModal
+                        table="role"
+                        type="delete"
+                        id={item.id}
+                        data={item}
+                        onItemChange={handleRoleChange}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <Pagination

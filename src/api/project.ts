@@ -13,6 +13,7 @@ const getAllProject = async () => {
     return [];
   }
 };
+
 const getAllProjects = async (
   page: number,
   pageSize: number,
@@ -23,7 +24,15 @@ const getAllProjects = async (
   try {
     let baseQuery = supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select(
+        `
+          *,
+          project_skills(
+            skill_id,
+            skills(name)
+          )
+        `,
+      )
       .eq("is_destroyed", false)
       .order("created_at", { ascending: false });
 
@@ -49,6 +58,7 @@ const getAllProjects = async (
     if (error) {
       throw error;
     }
+
     return { data, total: count ?? 0 };
   } catch (error) {
     console.error("Error fetching projects:", error);
@@ -56,12 +66,12 @@ const getAllProjects = async (
   }
 };
 
+
 const createProject = async (data: any) => {
   const { name, description, startDate, endDate, status, skills } = data;
   const projectGeneratedId = uuidv4();
 
   try {
-    // Bắt đầu transaction
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .insert({
@@ -76,8 +86,6 @@ const createProject = async (data: any) => {
       .single();
 
     if (projectError) throw projectError;
-
-    // Liên kết skills với project
     const projectSkills = skills.map((skillId) => {
       const id = uuidv4();
       return {
@@ -91,6 +99,19 @@ const createProject = async (data: any) => {
       .from("project_skills")
       .insert(projectSkills);
 
+      const { error: historyError } = await supabase
+      .from("project_history")
+      .insert([
+        {
+          action_type: "Add",
+          name: name,
+          description: `The project "${name}" has been added.`,
+          update_time: new Date(),
+        },
+      ]);
+    if (historyError) throw historyError;
+    
+
     if (skillsError) throw skillsError;
     return project;
   } catch (error) {
@@ -103,7 +124,6 @@ const updateProject = async (data: any) => {
   const { id, name, description, start_date, end_date, status, skills } = data;
 
   try {
-    // Update the project details
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .update({
@@ -118,8 +138,6 @@ const updateProject = async (data: any) => {
       .single();
 
     if (projectError) throw projectError;
-
-    // Remove existing skills for the project
     const { error: deleteSkillsError } = await supabase
       .from("project_skills")
       .delete()
@@ -127,7 +145,6 @@ const updateProject = async (data: any) => {
 
     if (deleteSkillsError) throw deleteSkillsError;
 
-    // Link new skills to the project
     const projectSkills = skills.map((skillId) => {
       const skillMappingId = uuidv4();
       return {
@@ -141,6 +158,15 @@ const updateProject = async (data: any) => {
       .from("project_skills")
       .insert(projectSkills);
 
+    await supabase.from("project_history").insert([
+      {
+        action_type: "Edit",
+        name: name,
+        description: `The project "${name}" has been updated.`,
+        update_time: new Date(),
+      },
+    ]);
+
     if (insertSkillsError) throw insertSkillsError;
     return project;
   } catch (error) {
@@ -151,17 +177,29 @@ const updateProject = async (data: any) => {
 
 const deleteProject = async (id: string) => {
   try {
-    const { data: project, error } = await supabase
+    const { data: project,error: updateError } = await supabase
       .from("projects")
       .update({
         is_destroyed: true,
       })
-      .eq("id", id)
-      .select()
-      .single();
-    if (error) {
-      throw new Error("Error");
+      .eq("id", id);
+
+    if (updateError) {
+      throw new Error("There was an error updating project status.");
     }
+    const { error: updateError2 } = await supabase.from("project_history").insert([
+      {
+        action_type: "Remove",
+        name: "Anonymous",
+        description: `The project anonymous has been deleted.`,
+        update_time: new Date(),
+      },
+    ]);
+
+    if (updateError2) {
+      throw new Error("There was an error updating project history.");
+    }
+
     return project;
   } catch (error) {
     console.error("Error deleting project:", error.message);
@@ -173,7 +211,15 @@ const getIDDetailProject = async (id) => {
   try {
     const { data, error } = await supabase
       .from("projects")
-      .select("*")
+      .select(
+        `
+          *,
+          project_skills(
+            skill_id,
+            skills(name)
+          )
+        `,
+      )
       .eq("id", id);
 
     if (error) {
@@ -187,6 +233,19 @@ const getIDDetailProject = async (id) => {
   }
 };
 
+const getProjectHistory = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('project_history')
+      .select('*')
+
+    if (error) throw error;
+    return data
+  } catch (error) {
+    console.error('Error fetching project history:', error);
+  }
+}
+
 export {
   getIDDetailProject,
   createProject,
@@ -194,4 +253,5 @@ export {
   getAllProjects,
   updateProject,
   deleteProject,
+  getProjectHistory,
 };

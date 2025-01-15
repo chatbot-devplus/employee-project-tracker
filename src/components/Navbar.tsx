@@ -8,9 +8,6 @@ const Navbar = () => {
 
   return (
     <nav className="p-4  border-b flex items-center justify-between bg-white">
-      <div className="text-gray-800 font-semibold text-lg">
-          Dashboard
-      </div>
       {/* ICONS AND USER */}
       {user && (
         <div className="flex items-center gap-6 justify-end w-full">
