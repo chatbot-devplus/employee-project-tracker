@@ -11,17 +11,21 @@ import UpdateHistory from "../../components/UpdateHistory";
 
 export type project = {
   id: string;
-  project_id: string;
   name: string;
   start_date: string;
   end_date: string;
   status: string;
   is_destroyed: boolean;
-  skill: string[];
+  project_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
-
 const columns = [
-  { label: "STT",
+  {
+    label: "STT",
     key: "stt",
     className: "hidden md:table-cell p-4",
   },
@@ -37,12 +41,12 @@ const columns = [
   },
   {
     label: "Start date",
-    key: "startDate",
+    key: "start_date",
     className: "hidden lg:table-cell",
   },
   {
     label: "End date",
-    key: "endDate",
+    key: "end_date",
     className: "hidden lg:table-cell",
   },
   {
@@ -133,37 +137,37 @@ const projectsListPage = () => {
     (item: project, index: number) => {
       const stt = (currentPage - 1) * itemsPerPage + index + 1;
       return (
-      <tr
-        key={item.id}
-        className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      > 
-        <td className="hidden md:table-cell p-4">{stt}</td>
-        <td className="hidden md:table-cell p-4">{item.name}</td>
-        <td className="hidden md:table-cell">{item.status}</td>
-        <td className="hidden md:table-cell">{item.start_date}</td>
-        <td className="hidden md:table-cell">{item.end_date}</td>
-        <td>
-          <div className="flex items-center gap-2">
-            <Link href={`/projects/${item.id}`}>
-              <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-                <Image src="/view.png" alt="" width={16} height={16} />
-              </button>
-            </Link>
-            <FormModal
-              table="project"
-              type="update"
-              data={item}
-              onItemChange={handleProjectChange}
-            />
-            <FormModal
-              table="project"
-              type="delete"
-              id={item.id}
-              onItemChange={handleProjectChange}
-            />
-          </div>
-        </td>
-      </tr>
+        <tr
+          key={item.id}
+          className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+        >
+          <td className="hidden md:table-cell p-4">{stt}</td>
+          <td className="hidden md:table-cell p-4">{item.name}</td>
+          <td className="hidden md:table-cell">{item.status}</td>
+          <td className="hidden md:table-cell">{item.start_date}</td>
+          <td className="hidden md:table-cell">{item.end_date}</td>
+          <td>
+            <div className="flex items-center gap-2">
+              <Link href={`/projects/${item.id}`}>
+                <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+                  <Image src="/view.png" alt="" width={16} height={16} />
+                </button>
+              </Link>
+              <FormModal
+                table="project"
+                type="update"
+                data={item}
+                onItemChange={handleProjectChange}
+              />
+              <FormModal
+                table="project"
+                type="delete"
+                id={item.id}
+                onItemChange={handleProjectChange}
+              />
+            </div>
+          </td>
+        </tr>
       );
     },
     [handleProjectChange],
@@ -210,88 +214,88 @@ const projectsListPage = () => {
   }, [totalItems, itemsPerPage]);
   return (
     <>
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {contextHolder}
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <div className="flex items-center gap-2">
-            <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
-              Items per page:
-            </label>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={handleItemsPerPageChange}
-              className="p-1 rounded-md text-xs border border-gray-300"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
+      <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+        {contextHolder}
+        {/* TOP */}
+        <div className="flex items-center justify-between">
+          <h1 className="hidden md:block text-lg font-semibold">All Projects</h1>
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              <label htmlFor="itemsPerPage" className="text-gray-500 text-xs">
+                Items per page:
+              </label>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+                className="p-1 rounded-md text-xs border border-gray-300"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-[200px] p-2 bg-transparent outline-none"
+                  value={localSearchQuery}
+                  onChange={handleSearchChange}
+                />
+              </div>
+              <label htmlFor="startDate" className="text-gray-500 text-xs">
+                Start Date:
+              </label>
               <input
-                type="text"
-                placeholder="Search..."
-                className="w-[200px] p-2 bg-transparent outline-none"
-                value={localSearchQuery}
-                onChange={handleSearchChange}
+                type="date"
+                id="startDate"
+                className="p-1 rounded-md text-xs border border-gray-300"
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
+              <label htmlFor="endDate" className="text-gray-500 text-xs">
+                End Date:
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                className="p-1 rounded-md text-xs border border-gray-300"
+                value={endDate}
+                onChange={handleEndDateChange}
               />
             </div>
-            <label htmlFor="startDate" className="text-gray-500 text-xs">
-              Start Date:
-            </label>
-            <input
-              type="date"
-              id="startDate"
-              className="p-1 rounded-md text-xs border border-gray-300"
-              value={startDate}
-              onChange={handleStartDateChange}
-            />
-            <label htmlFor="endDate" className="text-gray-500 text-xs">
-              End Date:
-            </label>
-            <input
-              type="date"
-              id="endDate"
-              className="p-1 rounded-md text-xs border border-gray-300"
-              value={endDate}
-              onChange={handleEndDateChange}
-            />
-          </div>
-          <div className="flex items-center gap-4 self-end">
-            <FormModal
-              table="project"
-              type="create"
-              onItemChange={handleProjectChange}
-            />
+            <div className="flex items-center gap-4 self-end">
+              <FormModal
+                table="project"
+                type="create"
+                onItemChange={handleProjectChange}
+              />
+            </div>
           </div>
         </div>
+        {/* LIST */}
+        <table className="w-full table-auto text-left">
+          <thead className="text-gray-500 text-xs uppercase">
+            <tr>
+              {columns.map((column) => (
+                <th key={column.key} className={`p-4 ${column.className || ""}`}>
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>{memoizedTable}</tbody>
+        </table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
-      {/* LIST */}
-      <table className="w-full table-auto text-left">
-        <thead className="text-gray-500 text-xs uppercase">
-          <tr>
-            {columns.map((column) => (
-              <th key={column.key} className={`p-4 ${column.className || ""}`}>
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{memoizedTable}</tbody>
-      </table>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
-    </div>
-    <div>
-    <UpdateHistory />
-    </div>
+      <div>
+        <UpdateHistory />
+      </div>
     </>
   );
 };
