@@ -5,6 +5,7 @@ import {
   getProjectCount,
   getEmployeesByRole,
   getProjectsByStatus,
+  getSkillCount,
 } from "../api/dashboard";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [employeesByRole, setEmployeesByRole] = useState([]);
   const [projectsByStatus, setProjectsByStatus] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [skillCount, setSkillCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +28,9 @@ const Dashboard = () => {
         const projects = await getProjectCount();
         const employeesByRoleData = await getEmployeesByRole();
         const projectData = await getProjectsByStatus();
+
+        const skills = await getSkillCount();
+        setSkillCount(skills);
 
         setEmployeeCount(employees);
         setProjectCount(projects);
@@ -91,19 +96,20 @@ const Dashboard = () => {
         <div className="w-full max-w-4xl">
           {/* Summary cards */}
           <div className="flex flex-wrap justify-center gap-8 mb-8">
-            <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                Total Employees
-              </h2>
-              <p className="text-5xl font-bold text-green-500">
-                {employeeCount}
-              </p>
+            {/* Employee Count */}
+            <div className="bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg rounded-lg p-6 w-64 text-center border transform hover:scale-105 transition duration-300 ease-in-out">
+              <h2 className="text-xl font-semibold mb-4">Total Employees</h2>
+              <p className="text-5xl font-bold">{employeeCount}</p>
             </div>
-            <div className="bg-white shadow-md rounded-lg p-6 w-64 text-center border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                Total Projects
-              </h2>
-              <p className="text-5xl font-bold text-blue-500">{projectCount}</p>
+            {/* Project Count */}
+            <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg rounded-lg p-6 w-64 text-center border transform hover:scale-105 transition duration-300 ease-in-out">
+              <h2 className="text-xl font-semibold mb-4">Total Projects</h2>
+              <p className="text-5xl font-bold">{projectCount}</p>
+            </div>
+            {/* Skill Count */}
+            <div className="bg-gradient-to-r from-purple-400 to-purple-600 text-white shadow-lg rounded-lg p-6 w-64 text-center border transform hover:scale-105 transition duration-300 ease-in-out">
+              <h2 className="text-xl font-semibold mb-4">Total Skills</h2>
+              <p className="text-5xl font-bold">{skillCount}</p>
             </div>
           </div>
 

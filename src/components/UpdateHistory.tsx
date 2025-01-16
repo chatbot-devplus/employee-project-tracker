@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Collapse, Input, Tag, Typography, Space, Spin} from "antd";
+import { Collapse, Input, Tag, Typography, Space, Spin } from "antd";
 import { FilterOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { format } from "date-fns";
 import { getProjectHistory } from "../api/project";
@@ -17,7 +17,7 @@ export default function UpdateHistory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [events, setEvents] = useState<UpdateEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const fetchProjectHistory = useCallback(async () => {
     setLoading(true);
     try {
@@ -39,7 +39,7 @@ export default function UpdateHistory() {
     (event) =>
       event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.action_type.toLowerCase().includes(searchTerm.toLowerCase())
+      event.action_type.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const getTagColor = (actionType: string) => {
@@ -70,7 +70,10 @@ export default function UpdateHistory() {
           <Text strong>{event.name}</Text>
         </Space>
         <Space>
-          <Text type="secondary" style={{ display: "flex", alignItems: "center" }}>
+          <Text
+            type="secondary"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <ClockCircleOutlined style={{ marginRight: "5px" }} />
             {format(new Date(event.update_time), "MMM d, yyyy HH:mm")}
           </Text>
@@ -99,13 +102,18 @@ export default function UpdateHistory() {
       />
 
       {loading ? (
-        <Spin size="large" style={{ display: "block", textAlign: "center", marginTop: "20px" }} />
+        <Spin
+          size="large"
+          style={{ display: "block", textAlign: "center", marginTop: "20px" }}
+        />
       ) : (
         <Collapse items={collapseItems} />
       )}
 
       {!loading && filteredEvents.length === 0 && (
-        <Text style={{ display: "block", textAlign: "center", marginTop: "20px" }}>
+        <Text
+          style={{ display: "block", textAlign: "center", marginTop: "20px" }}
+        >
           No updates found.
         </Text>
       )}

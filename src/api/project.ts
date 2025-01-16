@@ -66,7 +66,6 @@ const getAllProjects = async (
   }
 };
 
-
 const createProject = async (data: any) => {
   const { name, description, startDate, endDate, status, skills } = data;
   const projectGeneratedId = uuidv4();
@@ -99,7 +98,7 @@ const createProject = async (data: any) => {
       .from("project_skills")
       .insert(projectSkills);
 
-      const { error: historyError } = await supabase
+    const { error: historyError } = await supabase
       .from("project_history")
       .insert([
         {
@@ -110,7 +109,6 @@ const createProject = async (data: any) => {
         },
       ]);
     if (historyError) throw historyError;
-    
 
     if (skillsError) throw skillsError;
     return project;
@@ -177,7 +175,7 @@ const updateProject = async (data: any) => {
 
 const deleteProject = async (id: string) => {
   try {
-    const { data: project,error: updateError } = await supabase
+    const { data: project, error: updateError } = await supabase
       .from("projects")
       .update({
         is_destroyed: true,
@@ -187,14 +185,16 @@ const deleteProject = async (id: string) => {
     if (updateError) {
       throw new Error("There was an error updating project status.");
     }
-    const { error: updateError2 } = await supabase.from("project_history").insert([
-      {
-        action_type: "Remove",
-        name: "Anonymous",
-        description: `The project anonymous has been deleted.`,
-        update_time: new Date(),
-      },
-    ]);
+    const { error: updateError2 } = await supabase
+      .from("project_history")
+      .insert([
+        {
+          action_type: "Remove",
+          name: "Anonymous",
+          description: `The project anonymous has been deleted.`,
+          update_time: new Date(),
+        },
+      ]);
 
     if (updateError2) {
       throw new Error("There was an error updating project history.");
@@ -235,16 +235,14 @@ const getIDDetailProject = async (id) => {
 
 const getProjectHistory = async () => {
   try {
-    const { data, error } = await supabase
-      .from('project_history')
-      .select('*')
+    const { data, error } = await supabase.from("project_history").select("*");
 
     if (error) throw error;
-    return data
+    return data;
   } catch (error) {
-    console.error('Error fetching project history:', error);
+    console.error("Error fetching project history:", error);
   }
-}
+};
 
 export {
   getIDDetailProject,

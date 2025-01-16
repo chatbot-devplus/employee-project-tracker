@@ -31,7 +31,7 @@ const SkillComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-    const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const fetchSkills = useCallback(
     async (page: number) => {
@@ -55,7 +55,11 @@ const SkillComponent = () => {
     [itemsPerPage, messageApi],
   );
   const handleSkillChange = useCallback(
-        (newSkills: Skill, action: "create" | "update" | "delete", data?: Skill) => {
+    (
+      newSkills: Skill,
+      action: "create" | "update" | "delete",
+      data?: Skill,
+    ) => {
       if (action === "create" && newSkills) {
         setSkills((prevSkills) => [...prevSkills, newSkills]);
         messageApi.open({
@@ -74,7 +78,7 @@ const SkillComponent = () => {
           content: "Skills updated successfully!",
         });
       }
-         if (action === "delete" && data) {
+      if (action === "delete" && data) {
         setSkills((prevSkills) =>
           prevSkills.filter((skill) => skill.id !== data.id),
         );
@@ -82,9 +86,8 @@ const SkillComponent = () => {
           type: "success",
           content: "Skills deleted successfully!",
         });
-            }
-        fetchSkills(currentPage);
-        
+      }
+      fetchSkills(currentPage);
     },
     [messageApi, currentPage, fetchSkills],
   );
@@ -96,7 +99,7 @@ const SkillComponent = () => {
   };
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-      fetchSkills(page)
+    fetchSkills(page);
   };
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 

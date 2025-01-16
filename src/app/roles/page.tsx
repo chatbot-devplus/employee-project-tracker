@@ -57,34 +57,34 @@ const RolesComponent = () => {
 
   const handleRoleChange = useCallback(
     (newRoles: Role, action: "create" | "update" | "delete", data?: Role) => {
-        if (action === "create" && newRoles) {
-            setRoles((prevRoles) => [...prevRoles, newRoles]);
-            messageApi.open({
-              type: "success",
-              content: "Role created successfully!",
-            });
-          }
-          if (action === "update" && newRoles) {
-            setRoles((prevRoles) =>
-              prevRoles.map((role) => (role.id === newRoles.id ? newRoles : role)),
-            );
-            messageApi.open({
-              type: "success",
-              content: "Role updated successfully!",
-            });
-          }
-         if (action === "delete" && data) {
-            setRoles((prevRoles) =>
-              prevRoles.filter((role) => role.id !== data.id),
-            );
-            messageApi.open({
-              type: "success",
-              content: "Role deleted successfully!",
-            });
-          }
-        fetchRoles(currentPage);
+      if (action === "create" && newRoles) {
+        setRoles((prevRoles) => [...prevRoles, newRoles]);
+        messageApi.open({
+          type: "success",
+          content: "Role created successfully!",
+        });
+      }
+      if (action === "update" && newRoles) {
+        setRoles((prevRoles) =>
+          prevRoles.map((role) => (role.id === newRoles.id ? newRoles : role)),
+        );
+        messageApi.open({
+          type: "success",
+          content: "Role updated successfully!",
+        });
+      }
+      if (action === "delete" && data) {
+        setRoles((prevRoles) =>
+          prevRoles.filter((role) => role.id !== data.id),
+        );
+        messageApi.open({
+          type: "success",
+          content: "Role deleted successfully!",
+        });
+      }
+      fetchRoles(currentPage);
     },
-      [messageApi, currentPage, fetchRoles],
+    [messageApi, currentPage, fetchRoles],
   );
 
   const handleItemsPerPageChange = (
@@ -96,7 +96,7 @@ const RolesComponent = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchRoles(page)
+    fetchRoles(page);
   };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);

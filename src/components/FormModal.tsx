@@ -61,33 +61,31 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
 
-
   const handleDelete = async () => {
     if (id) {
-        try {
+      try {
         if (table === "employee") {
-            await deleteEmployee(id);
+          await deleteEmployee(id);
         } else if (table === "project") {
-            await deleteProject(id);
+          await deleteProject(id);
         } else if (table === "role") {
-            await deleteRole(id);
+          await deleteRole(id);
         } else if (table === "manage") {
-            await deleteEmployeeProject(id);
+          await deleteEmployeeProject(id);
         } else if (table === "skill") {
-            await deleteSkill(id);
+          await deleteSkill(id);
         }
         //  message.success("Deleted successfully!");
         if (onItemChange && data) {
-            onItemChange(data, "delete");
+          onItemChange(data, "delete");
         }
-         closeModal();
-        } catch (error) {
+        closeModal();
+      } catch (error) {
         console.log("Error deleting:", error);
         message.error("Failed to delete. Please try again later.");
-        }
+      }
     }
   };
-
 
   const Form = () => {
     return type === "delete" && id ? (
@@ -96,10 +94,10 @@ const FormModal = ({
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
         <button
-            className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
-            onClick={handleDelete}
+          className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
+          onClick={handleDelete}
         >
-            Delete
+          Delete
         </button>
       </div>
     ) : type === "create" || type === "update" ? (
@@ -108,7 +106,6 @@ const FormModal = ({
       "Form not found!"
     );
   };
-
 
   return (
     <>
