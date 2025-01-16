@@ -15,7 +15,7 @@ interface LayoutProps {
 
 const AuthCheck: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const isAuthPage = pathname === "/login";
 
@@ -50,8 +50,8 @@ const AuthCheck: React.FC<LayoutProps> = ({ children }) => {
           </div>
           {/* RIGHT */}
           <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-scroll flex flex-col">
-            <Navbar signOut={signOut} />
-            <main className="pb-8">{children}</main>
+            <Navbar />
+            <main className="py-4">{children}</main>
             <ChatBox />
           </div>
         </div>

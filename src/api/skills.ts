@@ -1,18 +1,27 @@
 import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
-const getAllSkills = async () => {
-  const { data, error } = await supabase.from("skills").select("*");
-  if (error) {
-    throw error;
-  }
-  return data;
-};
 
+const getAllSkills = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("skills")
+      .select("*")
+      .eq("is_destroyed", false);
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching skills:", error);
+    return [];
+  }
+};
 const getSkills = async (page: number, pageSize: number) => {
   try {
     const { data, error, count } = await supabase
       .from("skills")
       .select("*", { count: "exact" })
+      .eq("is_destroyed", false)
       .range((page - 1) * pageSize, page * pageSize - 1);
     if (error) {
       throw error;
@@ -25,7 +34,7 @@ const getSkills = async (page: number, pageSize: number) => {
       total: count ?? 0,
     };
   } catch (error) {
-    console.error("Error fetching employees:", error);
+    console.error("Error fetching skills:", error);
     return { data: [], total: 0 };
   }
 };
@@ -50,6 +59,7 @@ const createSkills = async (data: any) => {
         {
           id: generatedId,
           name: data.name,
+          is_destroyed: false,
         },
       ])
       .select("*")

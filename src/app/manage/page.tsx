@@ -26,7 +26,7 @@ const columns = [
   {
     label: "STT",
     key: "stt",
-    className: "p-4"
+    className: "p-4",
   },
   {
     label: "Name Employee",
@@ -136,42 +136,43 @@ const EmployeeProjectComponent = () => {
     setCurrentPage(page);
   };
   const renderRow = useCallback(
-    (item: EmployeeProject, index : number) => {
+    (item: EmployeeProject, index: number) => {
       const stt = (currentPage - 1) * itemsPerPage + index + 1;
       return (
-      <tr
-        key={item.id}
-        className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-      > 
-        <td className="hidden md:table-cell pl-4">{stt}</td>
-        <td className="hidden md:table-cell">{item.employees.name}</td>
-        <td className="hidden md:table-cell">{item.projects.name}</td>
-        <td className="hidden md:table-cell">{item.projects.description}</td>
-        <td className="hidden md:table-cell">{item.roles.role_name}</td>
-        <td className="hidden md:table-cell">{item.joining_date}</td>
-        <td className="hidden md:table-cell">
-          {item.outing_date ? (
-            <button className="bg-red-500 text-white px-2 py-1 rounded">
-              Finish
-            </button>
-          ) : (
-            <button className="bg-green-500 text-white px-2 py-1 rounded">
-              Not yet
-            </button>
-          )}
-        </td>
-        <td>
-          <div className="flex items-center gap-2">
-            <FormModal
-              table="manage"
-              type="delete"
-              id={item.id}
-              onItemChange={handleEmployeeProjectChange}
-            />
-          </div>
-        </td>
-      </tr>
-    )},
+        <tr
+          key={item.id}
+          className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+        >
+          <td className="hidden md:table-cell pl-4">{stt}</td>
+          <td className="hidden md:table-cell">{item.employees.name}</td>
+          <td className="hidden md:table-cell">{item.projects.name}</td>
+          <td className="hidden md:table-cell">{item.projects.description}</td>
+          <td className="hidden md:table-cell">{item.roles.role_name}</td>
+          <td className="hidden md:table-cell">{item.joining_date}</td>
+          <td className="hidden md:table-cell">
+            {item.outing_date ? (
+              <button className="bg-red-500 text-white px-2 py-1 rounded">
+                Finish
+              </button>
+            ) : (
+              <button className="bg-green-500 text-white px-2 py-1 rounded">
+                Not yet
+              </button>
+            )}
+          </td>
+          <td>
+            <div className="flex items-center gap-2">
+              <FormModal
+                table="manage"
+                type="delete"
+                id={item.id}
+                onItemChange={handleEmployeeProjectChange}
+              />
+            </div>
+          </td>
+        </tr>
+      );
+    },
     [handleEmployeeProjectChange],
   );
 
@@ -183,7 +184,12 @@ const EmployeeProjectComponent = () => {
     if (loading) {
       return <Spin />;
     }
-    return <Table renderRow={(item) => renderRow(item, employeeProject.indexOf(item))} data={employeeProject} />;
+    return (
+      <Table
+        renderRow={(item) => renderRow(item, employeeProject.indexOf(item))}
+        data={employeeProject}
+      />
+    );
   }, [employeeProject, renderRow, loading]);
   return (
     <>

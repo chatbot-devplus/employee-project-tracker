@@ -148,15 +148,19 @@ const employeesListPage = ({ searchQuery }: Props) => {
   };
 
   const handleEmployeeChange = useCallback(
-    (newEmployee: Employee, action: "create" | "update" | "delete") => {
-      if (action === "create") {
+    (
+      newEmployee: Employee,
+      action: "create" | "update" | "delete",
+      data?: Employee,
+    ) => {
+      if (action === "create" && newEmployee) {
         setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
         messageApi.open({
           type: "success",
           content: "Employee created successfully!",
         });
       }
-      if (action === "update") {
+      if (action === "update" && newEmployee) {
         setEmployees((prevEmployees) =>
           prevEmployees.map((employee) =>
             employee.id === newEmployee.id ? newEmployee : employee,
@@ -167,18 +171,30 @@ const employeesListPage = ({ searchQuery }: Props) => {
           content: "Employee updated successfully!",
         });
       }
-      if (action === "delete") {
+      if (action === "delete" && data) {
         setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== newEmployee.id),
+          prevEmployees.filter((employee) => employee.id !== data.id),
         );
         messageApi.open({
           type: "success",
           content: "Employee deleted successfully!",
         });
       }
+      if (debouncedSearchQuery) {
+        fetchSearchEmployees(debouncedSearchQuery, currentPage);
+      } else {
+        fetchEmployees(currentPage);
+      }
     },
-    [messageApi],
+    [
+      messageApi,
+      currentPage,
+      debouncedSearchQuery,
+      fetchEmployees,
+      fetchSearchEmployees,
+    ],
   );
+
   const renderRow = useCallback(
     (item: Employee, index: number) => {
       const stt = (currentPage - 1) * itemsPerPage + index + 1;
@@ -225,6 +241,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
               <FormModal
                 table="employee"
                 type="delete"
+                data={item}
                 id={item.id}
                 onItemChange={handleEmployeeChange}
               />

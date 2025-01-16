@@ -11,7 +11,8 @@ type Role = {
 };
 
 const columns = [
-  { label: "STT",
+  {
+    label: "STT",
     key: "stt",
   },
   {
@@ -55,15 +56,15 @@ const RolesComponent = () => {
   );
 
   const handleRoleChange = useCallback(
-    (newRoles: Role, action: "create" | "update" | "delete") => {
-      if (action === "create") {
+    (newRoles: Role, action: "create" | "update" | "delete", data?: Role) => {
+      if (action === "create" && newRoles) {
         setRoles((prevRoles) => [...prevRoles, newRoles]);
         messageApi.open({
           type: "success",
           content: "Role created successfully!",
         });
       }
-      if (action === "update") {
+      if (action === "update" && newRoles) {
         setRoles((prevRoles) =>
           prevRoles.map((role) => (role.id === newRoles.id ? newRoles : role)),
         );
@@ -72,17 +73,18 @@ const RolesComponent = () => {
           content: "Role updated successfully!",
         });
       }
-      if (action === "delete") {
+      if (action === "delete" && data) {
         setRoles((prevRoles) =>
-          prevRoles.filter((role) => role.id !== newRoles.id),
+          prevRoles.filter((role) => role.id !== data.id),
         );
         messageApi.open({
           type: "success",
           content: "Role deleted successfully!",
         });
       }
+      fetchRoles(currentPage);
     },
-    [messageApi],
+    [messageApi, currentPage, fetchRoles],
   );
 
   const handleItemsPerPageChange = (
@@ -94,6 +96,7 @@ const RolesComponent = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchRoles(page);
   };
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -149,41 +152,37 @@ const RolesComponent = () => {
           <tbody>
             {roles.map((item, index: number) => {
               const stt = (currentPage - 1) * itemsPerPage + index + 1;
-              return(
-              
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
-              >
-                <td className="items-center gap-4 p-4">
-                  {stt}
-                </td>
-                <td className="flex items-center gap-4 p-4">
-                  <div className="flex flex-col">
-                    <h3 className="font-semibold">{item.role_name}</h3>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <FormModal
-                      table="role"
-                      type="update"
-                      data={item}
-                      onItemChange={handleRoleChange}
-                    />
-                    <FormModal
-                      table="role"
-                      type="delete"
-                      id={item.id}
-                      onItemChange={handleRoleChange}
-                    />
-                  </div>
-                </td>
-              </tr>
-            
-            );
-            })
-          }
+              return (
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaGreenLight"
+                >
+                  <td className="items-center gap-4 p-4">{stt}</td>
+                  <td className="flex items-center gap-4 p-4">
+                    <div className="flex flex-col">
+                      <h3 className="font-semibold">{item.role_name}</h3>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <FormModal
+                        table="role"
+                        type="update"
+                        data={item}
+                        onItemChange={handleRoleChange}
+                      />
+                      <FormModal
+                        table="role"
+                        type="delete"
+                        id={item.id}
+                        data={item}
+                        onItemChange={handleRoleChange}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <Pagination

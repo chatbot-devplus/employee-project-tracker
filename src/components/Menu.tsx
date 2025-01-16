@@ -11,7 +11,7 @@ const menuItems = [
       {
         icon: "/home.png",
         label: "Home",
-        href: "/admin",
+        href: "/",
         visible: ["admin", "employee", "project"],
       },
       {
@@ -83,17 +83,17 @@ const Menu = () => {
     if (itemHref === "/employees") {
       return pathname.startsWith("/employees");
     }
-     if(itemHref === "/projects") {
-       return pathname.startsWith("/projects");
+    if (itemHref === "/projects") {
+      return pathname.startsWith("/projects");
     }
-     if(itemHref === "/roles") {
-        return pathname.startsWith("/roles");
+    if (itemHref === "/roles") {
+      return pathname.startsWith("/roles");
     }
-    if(itemHref === "/skills") {
-        return pathname.startsWith("/skills");
+    if (itemHref === "/skills") {
+      return pathname.startsWith("/skills");
     }
-    if(itemHref === "/manage") {
-         return pathname.startsWith("/manage");
+    if (itemHref === "/manage") {
+      return pathname.startsWith("/manage");
     }
     return pathname === itemHref;
   };

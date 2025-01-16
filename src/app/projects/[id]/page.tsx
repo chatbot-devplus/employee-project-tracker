@@ -12,6 +12,12 @@ type DetailProject = {
   status: string;
   start_date: Date;
   end_date: Date;
+  project_skills: {
+    skill_id: string;
+    skills: {
+      name: string;
+    };
+  }[];
 };
 
 const columns: TableProps<DetailProject>["columns"] = [
@@ -26,6 +32,18 @@ const columns: TableProps<DetailProject>["columns"] = [
     key: "projectDescription",
   },
   {
+    title: "Skills",
+    key: "skills",
+    className: "hidden lg:table-cell",
+    render: (_, record) => (
+      <ul>
+        {record.project_skills.map((skill) => (
+          <li key={skill.skill_id}>{skill.skills.name}</li>
+        ))}
+      </ul>
+    ),
+  },
+  {
     title: "Status",
     dataIndex: "status",
     key: "status",
@@ -33,14 +51,15 @@ const columns: TableProps<DetailProject>["columns"] = [
   {
     title: "Project Start Date",
     dataIndex: "start_date",
-    key: "projectEndDate",
+    key: "projectStartDate",
   },
   {
     title: "Project End Date",
     dataIndex: "end_date",
-    key: "projectStartDate",
+    key: "projectEndDate",
   },
 ];
+
 const DetailProjectPage = () => {
   const [projects, setProjects] = useState<DetailProject[]>([]);
   const [loading, setLoading] = useState(false);

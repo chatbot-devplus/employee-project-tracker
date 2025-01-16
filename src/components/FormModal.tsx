@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -61,38 +60,46 @@ const FormModal = ({
 
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
-  const Form = () => {
-    const handleDelete = async () => {
-      if (id) {
-        try {
-          if (table === "employee") {
-            await deleteEmployee(id);
-          } else if (table === "project") {
-            await deleteProject(id);
-          } else if (table === "role") {
-            await deleteRole(id);
-          } else if (table === "manage") {
-            await deleteEmployeeProject(id);
-          } else if (table === "skill") {
-            await deleteSkill(id);
-          }
-          message.success("Deleted successfully!");
-          closeModal();
-        } catch (error) {
-          console.log("Error deleting employee:", error);
-          alert("Failed to delete the employee. Please try again later.");
+
+  const handleDelete = async () => {
+    if (id) {
+      try {
+        if (table === "employee") {
+          await deleteEmployee(id);
+        } else if (table === "project") {
+          await deleteProject(id);
+        } else if (table === "role") {
+          await deleteRole(id);
+        } else if (table === "manage") {
+          await deleteEmployeeProject(id);
+        } else if (table === "skill") {
+          await deleteSkill(id);
         }
+        //  message.success("Deleted successfully!");
+        if (onItemChange && data) {
+          onItemChange(data, "delete");
+        }
+        closeModal();
+      } catch (error) {
+        console.log("Error deleting:", error);
+        message.error("Failed to delete. Please try again later.");
       }
-    };
+    }
+  };
+
+  const Form = () => {
     return type === "delete" && id ? (
-      <form onSubmit={handleDelete} className="p-4 flex flex-col gap-4">
+      <div className="p-4 flex flex-col gap-4">
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        <button
+          className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
+          onClick={handleDelete}
+        >
           Delete
         </button>
-      </form>
+      </div>
     ) : type === "create" || type === "update" ? (
       forms[table](type, { data, closeModal, onItemChange })
     ) : (

@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "../config/supabase";
 import { v4 as uuidv4 } from "uuid";
+
 const getAllRoles = async () => {
   try {
-    const { data, error } = await supabase.from("roles").select("*");
+    const { data, error } = await supabase
+      .from("roles")
+      .select("*")
+      .eq("is_destroyed", false);
     if (error) {
       throw error;
     }
@@ -12,13 +17,13 @@ const getAllRoles = async () => {
     return [];
   }
 };
-
-const getIDAllRole = async (id) => {
+const getIDAllRole = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("roles")
       .select("*")
-      .eq("id", id);
+      .eq("id", id)
+      .eq("is_destroyed", false);
     if (error) {
       throw error;
     }
@@ -34,6 +39,7 @@ const getAllRole = async (page: number, pageSize: number) => {
     const { data, error, count } = await supabase
       .from("roles")
       .select("*", { count: "exact" })
+      .eq("is_destroyed", false)
       .range((page - 1) * pageSize, page * pageSize - 1);
 
     if (error) {
@@ -62,6 +68,7 @@ const createRoles = async (data: any) => {
         {
           id: generatedId,
           role_name: data.role_name,
+          is_destroyed: false,
         },
       ])
       .select("*")
