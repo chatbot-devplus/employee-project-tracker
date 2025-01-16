@@ -129,7 +129,23 @@ const createEmployee = async (data: any) => {
     if (error) {
       throw new Error(error.message || "Unknown error");
     }
+     // Thêm kỹ năng vào bảng `employee_skills`
+     if (data.skills && Array.isArray(data.skills)) {
+      const employeeSkillsData = data.skills.map((skillId: string) => ({
+        employee_id: generatedId,
+        skill_id: skillId,
+      }));
 
+      const { error: skillsError } = await supabase
+        .from("employee_skills")
+        .insert(employeeSkillsData);
+
+      if (skillsError) {
+        throw new Error(
+          skillsError.message || "Error inserting employee skills"
+        );
+      }
+    }
     return {
       ...insertedData,
       roles: insertedData.roles ? { name: insertedData.roles.role_name } : null,
