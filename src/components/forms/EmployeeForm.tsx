@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "../InputField";
-import { createEmployee, updateEmployee } from "../../api/employee";
+import { createEmployee, updateEmployee,getIDEmployees } from "../../api/employee";
 import { getAllRoles } from "../../api/roles";
 import { getAllSkills } from "../../api/skills";
-import { useEffect, useState,useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const schema = z.object({
   name: z
@@ -51,7 +50,7 @@ const EmployeeForm = ({
       email: data?.email || "",
       role: data?.role || "",
       joiningDate: data?.joining_date || "",
-      skills: data?.skills || [],
+      skills: data?.employee_skills?.map((skill: any) => skill.skill_id) || [],
     },
   });
   const [roles, setRoles] = useState<{ id: string; role_name: string }[]>([]);
@@ -87,37 +86,40 @@ const EmployeeForm = ({
     fetchRolesAndSkills();
   }, [data, setValue, type]);
 
-  // useEffect(() => {
-  //   if (type === "update" && data?.role_id) {
-  //     setValue("role", data.role_id);
-  //   }
-  // }, [data, setValue, type]);
-
   const onSubmit = handleSubmit(async (formData) => {
     setIsLoading(true);
     try {
       let newEmployee;
       if (type === "create") {
         newEmployee = await createEmployee(formData);
-        if (newEmployee) {
-          const mappedEmployee = {
-            ...newEmployee,
-            joining_date: newEmployee.joining_date
-              ? new Date(newEmployee.joining_date).toLocaleDateString("en-CA")
-              : "",
-          };
-          onItemChange && onItemChange(mappedEmployee, "create");
+         if (newEmployee) {
+           const dataEmployee = await getIDEmployees(newEmployee.id);
+           if(Array.isArray(dataEmployee) && dataEmployee.length > 0){
+               const mappedEmployee = {
+                   ...dataEmployee[0],
+                   joining_date: dataEmployee[0].joining_date
+                       ? new Date(dataEmployee[0].joining_date).toLocaleDateString("en-CA")
+                       : "",
+               };
+                onItemChange && onItemChange(mappedEmployee, "create");
+           }
+          
         }
+
       } else if (type === "update" && data?.id) {
         newEmployee = await updateEmployee(data.id, formData);
         if (newEmployee) {
-          const mappedEmployee = {
-            ...newEmployee,
-            joining_date: newEmployee.joining_date
-              ? new Date(newEmployee.joining_date).toLocaleDateString("en-CA")
-              : "",
-          };
-          onItemChange && onItemChange(mappedEmployee, "update");
+            const dataEmployee = await getIDEmployees(newEmployee.id);
+            if(Array.isArray(dataEmployee) && dataEmployee.length > 0){
+               const mappedEmployee = {
+                   ...dataEmployee[0],
+                   joining_date: dataEmployee[0].joining_date
+                       ? new Date(dataEmployee[0].joining_date).toLocaleDateString("en-CA")
+                       : "",
+               };
+              onItemChange && onItemChange(mappedEmployee, "update");
+            }
+
         }
       }
       closeModal();

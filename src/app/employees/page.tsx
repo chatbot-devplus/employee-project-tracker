@@ -5,7 +5,7 @@ import Table from "../../components/Table";
 import Pagination from "../../components/Pagination";
 import FormModal from "../../components/FormModal";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { getAllEmployees, searchEmployees } from "../../api/employee";
+import { getAllEmployees, searchEmployees, getIDEmployees } from "../../api/employee";
 import { Spin, message } from "antd";
 
 type Employee = {
@@ -148,43 +148,55 @@ const employeesListPage = ({ searchQuery }: Props) => {
   };
 
   const handleEmployeeChange = useCallback(
-    (
+    async (
       newEmployee: Employee,
       action: "create" | "update" | "delete",
       data?: Employee,
     ) => {
-      if (action === "create" && newEmployee) {
-        setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
-        messageApi.open({
-          type: "success",
-          content: "Employee created successfully!",
-        });
-      }
-      if (action === "update" && newEmployee) {
-        setEmployees((prevEmployees) =>
-          prevEmployees.map((employee) =>
-            employee.id === newEmployee.id ? newEmployee : employee,
-          ),
-        );
-        messageApi.open({
-          type: "success",
-          content: "Employee updated successfully!",
-        });
-      }
-      if (action === "delete" && data) {
-        setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== data.id),
-        );
-        messageApi.open({
-          type: "success",
-          content: "Employee deleted successfully!",
-        });
-      }
-      if (debouncedSearchQuery) {
-        fetchSearchEmployees(debouncedSearchQuery, currentPage);
-      } else {
-        fetchEmployees(currentPage);
-      }
+        if (action === "create" && newEmployee) {
+            setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+            messageApi.open({
+                type: "success",
+                content: "Employee created successfully!",
+            });
+
+        }
+        if (action === "update" && newEmployee) {
+            setEmployees((prevEmployees) =>
+                prevEmployees.map((employee) =>
+                    employee.id === newEmployee.id ? newEmployee : employee,
+                ),
+            );
+            messageApi.open({
+                type: "success",
+                content: "Employee updated successfully!",
+            });
+        }
+        if (action === "delete" && data) {
+            setEmployees((prevEmployees) =>
+                prevEmployees.filter((employee) => employee.id !== data.id),
+            );
+            messageApi.open({
+                type: "success",
+                content: "Employee deleted successfully!",
+            });
+        }
+        if(action === 'create' || action === 'update'){
+           const dataEmployee = await getIDEmployees(newEmployee.id);
+                if(Array.isArray(dataEmployee) && dataEmployee.length > 0){
+                    if (debouncedSearchQuery) {
+                       fetchSearchEmployees(debouncedSearchQuery, currentPage)
+                    } else {
+                       fetchEmployees(currentPage);
+                   }
+                }
+        } else {
+         if (debouncedSearchQuery) {
+              fetchSearchEmployees(debouncedSearchQuery, currentPage)
+            } else {
+                  fetchEmployees(currentPage);
+          }
+        }
     },
     [
       messageApi,
@@ -241,7 +253,7 @@ const employeesListPage = ({ searchQuery }: Props) => {
               <FormModal
                 table="employee"
                 type="delete"
-                data={item}
+                 data={item}
                 id={item.id}
                 onItemChange={handleEmployeeChange}
               />

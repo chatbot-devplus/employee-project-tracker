@@ -32,6 +32,7 @@ const getAllEmployees = async (page: number, pageSize: number) => {
         { count: "exact" },
       )
       .eq("is_destroyed", false)
+      .order("created_at", { ascending: false })
       .range((page - 1) * pageSize, page * pageSize - 1);
     if (error) {
       throw error;
@@ -74,7 +75,7 @@ const getInforFromProject = async (id) => {
   }
 };
 
-const getIDEmployees = async (id) => {
+const getIDEmployees = async (id: string) => {
   try {
     const { data, error } = await supabase
       .from("employees")
@@ -88,7 +89,8 @@ const getIDEmployees = async (id) => {
         )
       `,
       )
-      .eq("id", id);
+      .eq("id", id)
+      .eq("is_destroyed",false);
 
     if (error) {
       throw error;
@@ -160,40 +162,70 @@ const createEmployee = async (data: any) => {
 
 // Update Employee
 const updateEmployee = async (id: string, updatedData: any) => {
-  try {
-    const { data, error } = await supabase
-      .from("employees")
-      .update({
-        name: updatedData.name,
-        email: updatedData.email,
-        role_id: updatedData.role,
-        joining_date: updatedData.joiningDate,
-      })
-      .eq("id", id)
-      .select(
-        `
+    try {
+        const { data, error } = await supabase
+            .from("employees")
+            .update({
+                name: updatedData.name,
+                email: updatedData.email,
+                role_id: updatedData.role,
+                joining_date: updatedData.joiningDate,
+            })
+            .eq("id", id)
+            .select(
+                `
         *,
         roles (
           role_name
         )
       `,
-      )
-      .single();
+            )
+            .single();
 
-    if (error) {
-      throw new Error(error.message || "Unknown error");
+        if (error) {
+            throw new Error(error.message || "Unknown error");
+        }
+
+        // Update kỹ năng vào bảng `employee_skills`
+        if (updatedData.skills && Array.isArray(updatedData.skills)) {
+            // Xóa kỹ năng hiện tại
+            const { error: deleteSkillsError } = await supabase
+                .from("employee_skills")
+                .delete()
+                .eq("employee_id", id);
+
+            if (deleteSkillsError) {
+                throw new Error(
+                    deleteSkillsError.message || "Error deleting employee skills"
+                );
+            }
+            // Thêm kỹ năng mới
+            const employeeSkillsData = updatedData.skills.map((skillId: string) => ({
+                employee_id: id,
+                skill_id: skillId,
+            }));
+
+            const { error: skillsError } = await supabase
+                .from("employee_skills")
+                .insert(employeeSkillsData);
+
+            if (skillsError) {
+                throw new Error(
+                    skillsError.message || "Error inserting employee skills"
+                );
+            }
+        }
+
+        return {
+            ...data,
+            roles: data.roles ? { name: data.roles.role_name } : null,
+        };
+    } catch (error: any) {
+        console.error("Error updating employee:", error);
+        throw new Error(
+            error.message || "An error occurred while updating the employee.",
+        );
     }
-
-    return {
-      ...data,
-      roles: data.roles ? { name: data.roles.role_name } : null,
-    };
-  } catch (error: any) {
-    console.error("Error updating employee:", error);
-    throw new Error(
-      error.message || "An error occurred while updating the employee.",
-    );
-  }
 };
 
 // Soft Delete Employee (update isDestroy to true)

@@ -53,11 +53,6 @@ const columns: TableProps<EmployeeProject>["columns"] = [
     key: "projectName",
   },
   {
-    title: "Role",
-    dataIndex: "role",
-    key: "role",
-  },
-  {
     title: "Project Description",
     dataIndex: ["projects", "description"],
     key: "projectDescription",
@@ -89,7 +84,7 @@ const columns: TableProps<EmployeeProject>["columns"] = [
             : "bg-green-500 hover:bg-green-600"
         }`}
       >
-        {record.outing_date ? "Leave" : "Not yet"}
+        {record.outing_date ? "Exited" : "On-going"}
       </button>
     ),
   },
